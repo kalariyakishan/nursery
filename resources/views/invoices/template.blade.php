@@ -41,8 +41,13 @@
     .invoice-border {
         border: 2px solid rgba(22, 101, 52, 0.2);
         padding: 10px;
-        height: 100%;
+        min-height: calc(297mm - 24mm); /* A4 height minus padding */
         position: relative;
+        display: flex;
+        flex-direction: column;
+    }
+    .a5 .invoice-border {
+        min-height: calc(210mm - 12mm);
     }
     .company-title {
         font-family: 'Times New Roman', serif;
@@ -176,7 +181,10 @@
     }
     
     /* Footer Elements */
-    .footer-table { margin-top: auto; }
+    .footer-table { 
+        margin-top: auto; 
+        width: 100%;
+    }
     .notes-box, .bank-box {
         border: 2px solid rgba(22, 101, 52, 0.3);
         padding: 10px;
@@ -280,14 +288,18 @@
             padding: 0 !important;
             box-shadow: none !important; 
             width: 100% !important; 
-            min-height: 0 !important;
-            height: auto !important;
+            min-height: 270mm !important;
+            height: 270mm !important;
             page-break-inside: avoid !important;
             break-inside: avoid !important;
+            overflow: hidden !important;
+            transform: scale(0.96);
+            transform-origin: top center;
         }
 
         .invoice-border {
-            height: auto !important;
+            height: 100% !important;
+            min-height: calc(270mm - 20mm) !important;
             border: 2px solid rgba(22, 101, 52, 0.2) !important;
         }
 
