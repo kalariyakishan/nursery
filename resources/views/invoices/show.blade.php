@@ -1,0 +1,137 @@
+@if(isset($isPdf) && $isPdf)
+    @extends('layouts.print')
+    @section('content')
+        @include('invoices.template')
+    @endsection
+@else
+    <x-app-layout>
+        <!-- Dynamic Print Styles for Browser Print -->
+        <style id="dynamic-page-style">
+            @page {
+                size: A4;
+                margin: 5mm;
+            }
+        </style>
+
+        <div x-data="{ paperSize: 'a4', lockPaperSize: false }" x-init="
+                const updatePrintStyle = (size, lock) => {
+                    const el = document.getElementById('dynamic-page-style');
+                    const rule = lock ? `@page { size: ${size.toUpperCase()}; margin: 5mm; }` : `@page { margin: 5mm; }`;
+                    el.innerText = rule;
+                };
+                $watch('paperSize', val => updatePrintStyle(val, lockPaperSize));
+                $watch('lockPaperSize', val => updatePrintStyle(paperSize, val));
+                updatePrintStyle(paperSize, lockPaperSize);
+             " class="min-h-screen">
+
+            <div class="mb-4 flex flex-col md:flex-row md:justify-between md:items-end gap-6 no-print">
+                <div class="p-4">
+                    <h2 class="text-3xl font-black text-text-primary gujarati-text tracking-tighter mb-2">બિલ વિગત (Bill
+                        Details)</h2>
+                    <p class="text-text-secondary font-bold tracking-widest text-xs uppercase opacity-60">ID
+                        #INV-{{ $invoice->id }}</p>
+                </div>
+                <div class="flex gap-4 p-4">
+                    <a href="{{ route('invoices.index') }}" class="secondary-btn rounded-xl">
+                        <span class="material-symbols-outlined">arrow_back</span> પાછા જાવ
+                    </a>
+                </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-8 items-start mb-10 px-4">
+                <!-- Left: Sidebar Settings -->
+                <div class="w-full md:w-1/4 lg:w-[22%] space-y-4 no-print md:sticky md:top-40">
+                    <div
+                        class="bg-white/80 backdrop-blur-sm p-5 rounded-[2rem] border-2 border-primary/10 shadow-xl shadow-primary/5 space-y-6">
+
+                        <form action="{{ route('invoices.pdf', $invoice->id) }}" method="GET" target="_blank">
+                            <!-- Step 1: Paper Size -->
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/20 font-black text-sm">
+                                    1
+                                </div>
+                                <div class="flex flex-col flex-1">
+                                    <label class="text-[9px] font-black uppercase tracking-[0.2em] text-primary mb-0.5">પેપર
+                                        સાઈઝ (PAPER)</label>
+                                    <select name="paper_size" x-model="paperSize"
+                                        class="bg-slate-50 border-none rounded-xl p-1.5 font-black text-xs text-text-primary focus:ring-2 focus:ring-primary/20 cursor-pointer w-full">
+                                        <option value="a4">A4 (Standard Size)</option>
+                                        <option value="a5">A5 (Small Size)</option>
+                                        <option value="letter">Letter Size</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Step 2: Print Actions -->
+                            <div class="border-t border-primary/10 pt-6 space-y-3 mt-6">
+                                <div class="flex items-center gap-3 mb-1">
+                                    <div
+                                        class="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/20 font-black text-sm">
+                                        2
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <label
+                                            class="text-[9px] font-black uppercase tracking-[0.2em] text-primary leading-none mb-1">કન્ફર્મ
+                                            કરો</label>
+                                        <p class="text-[10px] font-bold text-text-secondary opacity-60 leading-none">બધું જ
+                                            રેડી છે!</p>
+                                    </div>
+                                </div>
+                                <button type="button" onclick="window.print()"
+                                    class="primary-btn w-full py-4 rounded-xl shadow-xl shadow-primary/30 flex items-center justify-center gap-2 text-md mb-2">
+                                    <span class="material-symbols-outlined font-bold text-[20px]">print</span>
+                                    પ્રિન્ટ (PRINT)
+                                </button>
+                                <button type="submit"
+                                    class="w-full py-3 rounded-xl border border-primary/30 text-primary font-bold flex items-center justify-center gap-2 text-sm hover:bg-primary/5 transition-all">
+                                    <span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+                                    PDF Download
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Auto-Size Toggle -->
+                        <div class="bg-primary/5 p-4 rounded-xl border-2 border-primary/20 space-y-4">
+                            <div class="flex items-center justify-between gap-4">
+                                <div class="flex items-center gap-3 text-primary">
+                                    <span class="material-symbols-outlined text-[24px]">settings_suggest</span>
+                                    <p class="text-[10px] font-black uppercase tracking-widest leading-none">Auto-Size (કદ
+                                        ઓટો સેટ)</p>
+                                </div>
+                                <!-- Prominent Toggle Switch -->
+                                <label class="relative inline-flex items-center cursor-pointer group">
+                                    <input type="checkbox" x-model="lockPaperSize" class="sr-only peer">
+                                    <div
+                                        class="w-12 h-6 bg-slate-300 peer-focus:outline-none ring-4 ring-primary/5 rounded-full peer peer-checked:after:translate-x-6 peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:start-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary">
+                                    </div>
+                                </label>
+                            </div>
+                            <p class="text-[10px] font-bold text-text-secondary leading-tight opacity-70">
+                                જો પ્રિન્ટ ડાયલોગમાં સાઈઝ ઓપ્શન બદલવો હોય, તો આ બટન બંધ કરી દો.
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Right: Preview Area (Content Area) -->
+                <div class="w-full md:w-3/4 lg:w-[78%]">
+                    <div
+                        class="flex justify-center items-start bg-slate-100/50 py-8 rounded-[2.5rem] border-2 border-dashed border-primary/10 overflow-hidden print:bg-transparent print:p-0 print:border-none min-h-[900px]">
+
+                        <div class="printable-bill transition-all duration-500 ease-in-out bg-white shadow-[0_30px_60px_-15px_rgba(0,0,0,0.15)] ring-1 ring-black/5 origin-top scale-[0.65] lg:scale-[0.85] print:scale-100 print:shadow-none print:ring-0 print:border-none"
+                            id="capture-area">
+                            <div class="print-area">
+                                @include('invoices.template')
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </x-app-layout>
+@endif
