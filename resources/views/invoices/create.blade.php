@@ -316,6 +316,14 @@
                 },
 
                 addItem() {
+                    if (this.items.length >= 17) {
+                        if (window.showToast) {
+                            window.showToast('તમે એક ઇન્વોઇસમાં વધુમાં વધુ 17 આઈટમ ઉમેરી શકો છો. મહેરબાની કરીને નવું બિલ બનાવો.', 'error');
+                        } else {
+                            alert('તમે એક ઇન્વોઇસમાં વધુમાં વધુ 17 આઈટમ ઉમેરી શકો છો. મહેરબાની કરીને નવું બિલ બનાવો.');
+                        }
+                        return;
+                    }
                     this.items.push({
                         product_id: '',
                         product_name: '',

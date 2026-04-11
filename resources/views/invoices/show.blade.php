@@ -13,16 +13,15 @@
             }
         </style>
 
-        <div x-data="{ paperSize: 'a4', lockPaperSize: false }" x-init="
-                const updatePrintStyle = (size, lock) => {
-                    const el = document.getElementById('dynamic-page-style');
-                    const rule = lock ? `@page { size: ${size.toUpperCase()}; margin: 5mm; }` : `@page { margin: 5mm; }`;
-                    el.innerText = rule;
-                };
-                $watch('paperSize', val => updatePrintStyle(val, lockPaperSize));
-                $watch('lockPaperSize', val => updatePrintStyle(paperSize, val));
-                updatePrintStyle(paperSize, lockPaperSize);
-             " class="min-h-screen">
+        <div x-data="{ paperSize: 'a4' }" 
+         x-init="
+            const updatePrintStyle = (size) => {
+                const el = document.getElementById('dynamic-page-style');
+                el.innerText = `@page { size: ${size.toUpperCase()}; margin: 5mm; }`;
+            };
+            $watch('paperSize', val => updatePrintStyle(val));
+            updatePrintStyle(paperSize);
+         " class="min-h-screen">
 
             <div class="mb-4 flex flex-col md:flex-row md:justify-between md:items-end gap-6 no-print">
                 <div class="p-4">
@@ -83,34 +82,15 @@
                                     <span class="material-symbols-outlined font-bold text-[20px]">print</span>
                                     પ્રિન્ટ (PRINT)
                                 </button>
+                                <!--
                                 <button type="submit"
                                     class="w-full py-3 rounded-xl border border-primary/30 text-primary font-bold flex items-center justify-center gap-2 text-sm hover:bg-primary/5 transition-all">
                                     <span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
                                     PDF Download
                                 </button>
+                                -->
                             </div>
                         </form>
-
-                        <!-- Auto-Size Toggle -->
-                        <div class="bg-primary/5 p-4 rounded-xl border-2 border-primary/20 space-y-4">
-                            <div class="flex items-center justify-between gap-4">
-                                <div class="flex items-center gap-3 text-primary">
-                                    <span class="material-symbols-outlined text-[24px]">settings_suggest</span>
-                                    <p class="text-[10px] font-black uppercase tracking-widest leading-none">Auto-Size (કદ
-                                        ઓટો સેટ)</p>
-                                </div>
-                                <!-- Prominent Toggle Switch -->
-                                <label class="relative inline-flex items-center cursor-pointer group">
-                                    <input type="checkbox" x-model="lockPaperSize" class="sr-only peer">
-                                    <div
-                                        class="w-12 h-6 bg-slate-300 peer-focus:outline-none ring-4 ring-primary/5 rounded-full peer peer-checked:after:translate-x-6 peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:start-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary">
-                                    </div>
-                                </label>
-                            </div>
-                            <p class="text-[10px] font-bold text-text-secondary leading-tight opacity-70">
-                                જો પ્રિન્ટ ડાયલોગમાં સાઈઝ ઓપ્શન બદલવો હોય, તો આ બટન બંધ કરી દો.
-                            </p>
-                        </div>
 
                     </div>
                 </div>

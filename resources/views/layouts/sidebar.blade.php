@@ -2,8 +2,8 @@
        :class="sidebarOpen ? 'translate-x-0 shadow-2xl shadow-black/20' : '-translate-x-full'">
     <div class="h-20 flex items-center justify-between px-6 border-b border-border-light/50">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-white shadow shadow-primary/20 shrink-0">
-                <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">potted_plant</span>
+            <div class="w-12 h-12 rounded-lg bg-white border border-border-light shadow-sm flex items-center justify-center p-1.5 shrink-0 overflow-hidden group hover:rotate-3 transition-transform duration-300">
+                <img src="{{ asset('images/logo.png') }}" class="w-full h-full object-contain" alt="New Vrundavan Nursery Logo">
             </div>
             <div class="min-w-0">
                 <h1 class="text-sm font-bold text-text-primary gujarati-text leading-tight truncate">New Vrundavan Nursery</h1>
