@@ -30,19 +30,24 @@ Route::middleware('auth')->group(function () {
     Route::get('products/data', [App\Http\Controllers\ProductController::class, 'getData'])->name('products.data');
     Route::post('products/import', [App\Http\Controllers\ProductController::class, 'import'])->name('products.import');
     Route::resource('products', ProductController::class);
+    
     Route::get('invoices/data', [InvoiceController::class, 'getData'])->name('invoices.data');
     Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'pdf'])->name('invoices.pdf');
     Route::resource('invoices', InvoiceController::class);
+
+    Route::get('settings', [App\Http\Controllers\SettingController::class, 'index'])->name('settings.index');
+    Route::post('settings', [App\Http\Controllers\SettingController::class, 'update'])->name('settings.update');
 
     Route::get('/api/search', function (Illuminate\Http\Request $request) {
         $query = $request->get('q');
         if (!$query) return response()->json([]);
 
         $invoices = App\Models\Invoice::where('customer_name', 'LIKE', "%{$query}%")
-            ->orWhere('id', 'LIKE', "%{$query}%")
+            ->orWhere('invoice_no', 'LIKE', "%{$query}%")
+            ->orWhere('phone', 'LIKE', "%{$query}%")
             ->latest()
             ->limit(10)
-            ->get(['id', 'customer_name', 'total']);
+            ->get(['id', 'invoice_no', 'customer_name', 'total']);
 
         return response()->json($invoices);
     })->name('api.search');

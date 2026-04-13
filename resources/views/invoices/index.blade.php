@@ -125,8 +125,8 @@
                         render: function (data, type, row) {
                             return `
                                 <div class="flex items-center gap-4">
-                                    <div class="w-10 h-10 rounded-lg bg-primary/5 text-primary flex items-center justify-center font-bold text-xs border border-primary/10">
-                                        #${row.id}
+                                    <div class="w-auto px-3 h-10 rounded-lg bg-primary/5 text-primary flex items-center justify-center font-bold text-xs border border-primary/10">
+                                        ${row.invoice_no}
                                     </div>
                                     <div>
                                         <span class="text-sm font-black text-text-primary tracking-tight">${row.date}</span>

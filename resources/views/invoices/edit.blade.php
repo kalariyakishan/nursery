@@ -6,7 +6,7 @@
                 <div class="flex items-center gap-3 mt-1">
                     <span class="text-[10px] font-bold text-text-secondary uppercase tracking-[0.2em]">SaaS Billing System</span>
                     <span class="w-1 h-1 bg-border-light rounded-full"></span>
-                    <span class="text-xs font-bold text-primary">#INV-{{ $invoice->id }}</span>
+                    <span class="text-xs font-bold text-primary">{{ $invoice->invoice_no }}</span>
                 </div>
             </div>
             <div class="flex flex-wrap gap-4">
@@ -83,7 +83,7 @@
                                 <p class="text-red-600 text-[10px] font-bold italic">બધી આઈટમનું નામ, જથ્થો અને ભાવ ભરવા ફરજિયાત છે.</p>
                             </div>
 @endif
-                        <div class="divide-y divide-border-light/40 max-h-[500px] overflow-y-auto no-scrollbar">
+                        <div class="divide-y divide-border-light/40 overflow-visible">
                             <template x-for="(item, index) in items" :key="index">
                                 <div class="p-4 md:p-6 grid grid-cols-1 md:grid-cols-12 gap-4 items-center group relative hover:bg-background/20 transition-colors">
                                     <div class="col-span-4 space-y-2">
@@ -181,6 +181,28 @@
                                     <span class="font-bold text-xs text-red-700" x-text="'- ₹' + discount.toLocaleString('en-IN', {minimumFractionDigits: 2})"></span>
                                 </div>
                             </div>
+                            <template x-if="gstSettings.enabled">
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center px-2">
+                                        <div class="flex flex-col">
+                                            <span class="text-text-secondary text-[10px] uppercase font-bold opacity-60">CGST</span>
+                                            <span class="text-[9px] font-bold text-text-secondary/40" x-text="'(' + gstSettings.cgst_percentage + '%)'"></span>
+                                        </div>
+                                        <span class="font-bold text-sm tracking-tight" x-text="'₹ ' + cgstAmount.toLocaleString('en-IN', {minimumFractionDigits: 2})"></span>
+                                    </div>
+                                    <div class="flex justify-between items-center px-2">
+                                        <div class="flex flex-col">
+                                            <span class="text-text-secondary text-[10px] uppercase font-bold opacity-60">SGST</span>
+                                            <span class="text-[9px] font-bold text-text-secondary/40" x-text="'(' + gstSettings.sgst_percentage + '%)'"></span>
+                                        </div>
+                                        <span class="font-bold text-sm tracking-tight" x-text="'₹ ' + sgstAmount.toLocaleString('en-IN', {minimumFractionDigits: 2})"></span>
+                                    </div>
+                                    <div class="flex justify-between items-center px-4 py-2 bg-primary/5 rounded-lg border border-primary/10">
+                                        <span class="text-primary text-[10px] font-bold uppercase">Total GST</span>
+                                        <span class="font-bold text-xs text-primary" x-text="'₹ ' + gstAmount.toLocaleString('en-IN', {minimumFractionDigits: 2})"></span>
+                                    </div>
+                                </div>
+                            </template>
                             <div class="pt-4 border-t border-border-light flex justify-between items-center">
                                 <div class="gujarati-text font-black text-xl text-primary leading-none">ફાઈનલ ટોટલ</div>
                                 <div class="text-right">
@@ -228,11 +250,13 @@
         function invoiceSystem() {
             return {
                 availableProducts: @json($products),
+                gstSettings: @json($gstSettings),
                 items: @json($invoice->items),
                 subtotal: {{ $invoice->subtotal }},
                 discount: {{ $invoice->discount }},
-                gstRate: 0,
                 gstAmount: 0,
+                cgstAmount: 0,
+                sgstAmount: 0,
                 grandTotal: {{ $invoice->total }},
 
                 init() {
@@ -253,7 +277,7 @@
 
                     this.subtotal = {{ old('subtotal', $invoice->subtotal) }};
                     this.discount = {{ old('discount', $invoice->discount) }};
-                    this.gstAmount = {{ old('gst', $invoice->gst) }};
+                    this.gstAmount = {{ old('gst_amount', $invoice->gst_amount) }};
                     this.grandTotal = {{ old('total', $invoice->total) }};
                     // Try to match existing items with available products to load variants
                     this.items.forEach((item, index) => {
@@ -322,9 +346,31 @@
 
                 calculate() {
                     this.subtotal = this.items.reduce((sum, item) => sum + (item.quantity * (item.price || 0)), 0);
-                    this.gstAmount = (this.subtotal - this.discount) * (this.gstRate / 100);
+                    const amountToTax = this.subtotal - this.discount;
+                    
+                    if (this.gstSettings.enabled && this.gstSettings.percentage > 0) {
+                        if (this.gstSettings.type === 'inclusive') {
+                            this.gstAmount = amountToTax - (amountToTax / (1 + (this.gstSettings.percentage / 100)));
+                            this.grandTotal = amountToTax;
+
+                            const basePrice = amountToTax / (1 + (this.gstSettings.percentage / 100));
+                            this.cgstAmount = basePrice * (this.gstSettings.cgst_percentage / 100);
+                            this.sgstAmount = basePrice * (this.gstSettings.sgst_percentage / 100);
+                        } else {
+                            this.gstAmount = amountToTax * (this.gstSettings.percentage / 100);
+                            this.grandTotal = amountToTax + this.gstAmount;
+
+                            this.cgstAmount = amountToTax * (this.gstSettings.cgst_percentage / 100);
+                            this.sgstAmount = amountToTax * (this.gstSettings.sgst_percentage / 100);
+                        }
+                    } else {
+                        this.gstAmount = 0;
+                        this.cgstAmount = 0;
+                        this.sgstAmount = 0;
+                        this.grandTotal = amountToTax;
+                    }
+
                     if (this.gstAmount < 0) this.gstAmount = 0;
-                    this.grandTotal = (this.subtotal - this.discount) + this.gstAmount;
                     if (this.grandTotal < 0) this.grandTotal = 0;
                 },
 

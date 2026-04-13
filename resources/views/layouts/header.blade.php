@@ -42,8 +42,8 @@
                     <template x-for="item in results" :key="item.id">
                         <a :href="`/invoices/${item.id}`" class="flex items-center justify-between p-4 hover:bg-primary/5 transition-colors border-b border-border-light/50 last:border-0 group">
                             <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-black text-[10px]">
-                                    #<span x-text="item.id"></span>
+                                <div class="w-auto px-2 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-black text-[10px]">
+                                    <span x-text="item.invoice_no"></span>
                                 </div>
                                 <div>
                                     <p class="font-black gujarati-text text-primary-dark group-hover:text-primary leading-none" x-text="item.customer_name"></p>

@@ -9,6 +9,10 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        
+        <!-- Toastr CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+        
         @stack('styles')
     </head>
     <body class="bg-background text-text-primary font-sans antialiased min-h-screen" x-data="{ sidebarOpen: false }">
@@ -38,67 +42,54 @@
              x-transition:leave-end="opacity-0"
              style="display: none;"></div>
 
-        <!-- Global Toasting System -->
-        <div x-data="toastComponent()" class="fixed top-12 right-8 z-[100] flex flex-col gap-4 max-w-sm pointer-events-none">
-            <template x-for="toast in toasts" :key="toast.id">
-                <div x-show="toast.visible" 
-                     x-transition:enter="transition ease-out duration-300 transform"
-                     x-transition:enter-start="translate-x-full opacity-0"
-                     x-transition:enter-end="translate-x-0 opacity-100"
-                     x-transition:leave="transition ease-in duration-200 transform"
-                     x-transition:leave-start="translate-x-0 opacity-100"
-                     x-transition:leave-end="translate-x-full opacity-0"
-                     :class="toast.type === 'success' ? 'bg-primary border-primary/20 shadow-primary/20' : 'bg-red-600 border-red-400/20 shadow-red-500/20'"
-                     class="pointer-events-auto shadow-2xl flex items-center gap-4 py-4 px-6 rounded-2xl text-white border backdrop-blur-md min-w-[320px]">
-                    
-                    <div :class="toast.type === 'success' ? 'bg-white/20' : 'bg-white/10'" class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0">
-                        <span class="material-symbols-outlined text-[20px]" x-text="toast.type === 'success' ? 'check_circle' : 'warning'"></span>
-                    </div>
-
-                    <div class="flex-1">
-                        <h4 class="text-[10px] font-black uppercase tracking-[0.2em] opacity-60 mb-0.5" x-text="toast.type === 'success' ? 'સફળતા' : 'ભૂલ'"></h4>
-                        <p class="font-bold text-sm gujarati-text leading-tight" x-text="toast.message"></p>
-                    </div>
-
-                    <button @click="toast.visible = false" class="opacity-40 hover:opacity-100 transition-opacity">
-                        <span class="material-symbols-outlined text-[18px]">close</span>
-                    </button>
-                </div>
-            </template>
-        </div>
+        <!-- jQuery & Toastr JS -->
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
         <script>
-            function toastComponent() {
-                return {
-                    toasts: [],
-                    init() {
-                        window.showToast = (message, type = 'success') => {
-                            const id = Date.now();
-                            this.toasts.push({ id, message, type, visible: true });
-                            
-                            setTimeout(() => {
-                                const index = this.toasts.findIndex(t => t.id === id);
-                                if (index !== -1) {
-                                    this.toasts[index].visible = false;
-                                    setTimeout(() => {
-                                        this.toasts = this.toasts.filter(t => t.id !== id);
-                                    }, 500);
-                                }
-                            }, 5000);
-                        };
+            $(document).ready(function() {
+                // Toastr Configuration
+                toastr.options = {
+                    "closeButton": true,
+                    "debug": false,
+                    "newestOnTop": true,
+                    "progressBar": true,
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": false,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                };
 
-                        @if(session('success'))
-                            setTimeout(() => window.showToast(@js(session('success')), 'success'), 500);
-                        @endif
-                        @if(session('error'))
-                            setTimeout(() => window.showToast(@js(session('error')), 'error'), 500);
-                        @endif
-                        @if($errors->any())
-                            setTimeout(() => window.showToast(@js($errors->first()), 'error'), 600);
-                        @endif
-                    }
-                }
-            }
+                // Global Toast Helper (for existing code)
+                window.showToast = function(message, type = 'success') {
+                    if (type === 'success') toastr.success(message);
+                    else if (type === 'error') toastr.error(message);
+                    else if (type === 'warning') toastr.warning(message);
+                    else toastr.info(message);
+                };
+
+                // Laravel Session Flash Messages
+                @if(session('success'))
+                    toastr.success("{{ session('success') }}");
+                @endif
+
+                @if(session('error'))
+                    toastr.error("{{ session('error') }}");
+                @endif
+
+                @if($errors->any())
+                    @foreach($errors->all() as $error)
+                        toastr.error("{{ $error }}");
+                    @endforeach
+                @endif
+            });
         </script>
 
         @stack('footer')

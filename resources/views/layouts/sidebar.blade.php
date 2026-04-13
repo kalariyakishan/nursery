@@ -40,6 +40,12 @@
             <span class="material-symbols-outlined text-[20px]" style="{{ request()->routeIs('products.*') ? "font-variation-settings: 'FILL' 1;" : '' }}">inventory_2</span>
             <span class="gujarati-text text-sm">પ્રોડક્ટ મેનેજમેન્ટ</span>
         </a>
+
+        <a href="{{ route('settings.index') }}" 
+           class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 {{ request()->routeIs('settings.*') ? 'bg-primary text-white shadow-md font-semibold' : 'text-text-secondary hover:bg-background hover:text-primary' }}">
+            <span class="material-symbols-outlined text-[20px]" style="{{ request()->routeIs('settings.*') ? "font-variation-settings: 'FILL' 1;" : '' }}">settings</span>
+            <span class="gujarati-text text-sm">સેટિંગ્સ</span>
+        </a>
     </nav>
     
     <div class="p-4 border-t border-border-light">

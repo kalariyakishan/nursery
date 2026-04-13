@@ -407,7 +407,7 @@
         <!-- Bill Details -->
         <table class="bill-details-table" width="100%">
             <tr>
-                <td width="30%">Bill No. <span class="highlight">#{{ str_pad($invoice->id, 3, '0', STR_PAD_LEFT) }}</span></td>
+                <td width="30%">Bill No. <span class="highlight">#{{ $invoice->invoice_no }}</span></td>
                 <td width="40%" class="dotted-line"></td>
                 <td width="30%" style="text-align: right;">Date : <span style="color: #166534;">{{ $invoice->created_at->format('d/m/Y') }}</span></td>
             </tr>
@@ -471,15 +471,38 @@
                     @endfor
                 </tbody>
                 <tfoot>
-                    @if($invoice->discount > 0)
+                    @php
+                        $afterDiscount = $invoice->subtotal - $invoice->discount;
+                    @endphp
+
+                    @if($invoice->discount > 0 || $invoice->gst_amount > 0)
                         <tr>
                             <td colspan="4" class="tfoot-label">Subtotal</td>
-                            <td class="tfoot-value font-bold">₹{{ number_format($invoice->subtotal, 2) }}</td>
+                            <td class="tfoot-value">₹{{ number_format($invoice->subtotal, 2) }}</td>
                         </tr>
+                        @if($invoice->discount > 0)
                         <tr>
                             <td colspan="4" class="tfoot-label highlight-red">Discount</td>
                             <td class="tfoot-value highlight-red">- ₹{{ number_format($invoice->discount, 2) }}</td>
                         </tr>
+                        @endif
+                        
+                        @if($invoice->gst_amount > 0)
+                            @if($invoice->gst_type === 'exclusive')
+                                <tr>
+                                    <td colspan="4" class="tfoot-label">Taxable Amount</td>
+                                    <td class="tfoot-value">₹{{ number_format($afterDiscount, 2) }}</td>
+                                </tr>
+                            @endif
+                            <tr>
+                                <td colspan="4" class="tfoot-label">CGST ({{ number_format($invoice->gst_percentage / 2, 1) }}%)</td>
+                                <td class="tfoot-value">₹{{ number_format($invoice->cgst, 2) }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" class="tfoot-label">SGST ({{ number_format($invoice->gst_percentage / 2, 1) }}%)</td>
+                                <td class="tfoot-value">₹{{ number_format($invoice->sgst, 2) }}</td>
+                            </tr>
+                        @endif
                     @endif
                     <tr class="total-row">
                         <td colspan="2" class="total-label">Total</td>

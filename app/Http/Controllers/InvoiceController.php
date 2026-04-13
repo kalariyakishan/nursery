@@ -4,11 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\Invoice;
 use App\Models\Product;
+use App\Models\Setting;
+use App\Services\GstService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class InvoiceController extends Controller
 {
+    protected $gstService;
+
+    public function __construct(GstService $gstService)
+    {
+        $this->gstService = $gstService;
+    }
     public function index()
     {
         return view('invoices.index');
@@ -22,6 +30,7 @@ class InvoiceController extends Controller
             $search = $request->search_value;
             $query->where(function($q) use ($search) {
                 $q->where('customer_name', 'like', "%{$search}%")
+                  ->orWhere('invoice_no', 'like', "%{$search}%")
                   ->orWhere('phone', 'like', "%{$search}%")
                   ->orWhere('id', 'like', "%{$search}%");
             });
@@ -45,6 +54,7 @@ class InvoiceController extends Controller
         $data = $invoices->map(function($invoice) {
             return [
                 'id' => $invoice->id,
+                'invoice_no' => $invoice->invoice_no,
                 'customer_name' => $invoice->customer_name,
                 'phone' => $invoice->phone,
                 'total' => '₹' . number_format($invoice->total, 2),
@@ -65,7 +75,14 @@ class InvoiceController extends Controller
     public function create()
     {
         $products = Product::with('variants')->get();
-        return view('invoices.create', compact('products'));
+        $gstSettings = [
+            'enabled' => Setting::get('gst_enabled', '0') === '1',
+            'type' => Setting::get('gst_type', 'exclusive'),
+            'percentage' => (float)Setting::get('gst_percentage', 0),
+            'cgst_percentage' => (float)Setting::get('cgst_percentage', 0),
+            'sgst_percentage' => (float)Setting::get('sgst_percentage', 0),
+        ];
+        return view('invoices.create', compact('products', 'gstSettings'));
     }
 
     public function store(Request $request)
@@ -90,14 +107,30 @@ class InvoiceController extends Controller
 
         DB::beginTransaction();
         try {
+            // GST Integration
+            $gstEnabled = Setting::get('gst_enabled', '0') === '1';
+            $gstPercentage = $gstEnabled ? (float)Setting::get('gst_percentage', 0) : 0;
+            $gstType = Setting::get('gst_type', 'exclusive');
+            
+            $gstOptions = [
+                'cgst_percentage' => (float)Setting::get('cgst_percentage', 0),
+                'sgst_percentage' => (float)Setting::get('sgst_percentage', 0),
+            ];
+
+            $gstDetails = $this->gstService->calculate($request->subtotal - $request->discount, $gstPercentage, $gstType, $gstOptions);
+
             $invoiceData = [
                 'customer_name' => $request->customer_name,
                 'phone' => $request->phone,
                 'address' => $request->address,
                 'subtotal' => $request->subtotal,
                 'discount' => $request->discount,
-                'gst' => $request->gst,
-                'total' => $request->total,
+                'gst_percentage' => $gstDetails['gst_percentage'],
+                'gst_amount' => $gstDetails['gst_amount'],
+                'cgst' => $gstDetails['cgst'],
+                'sgst' => $gstDetails['sgst'],
+                'gst_type' => $gstDetails['gst_type'],
+                'total' => $gstDetails['total'],
                 'notes' => $request->notes,
             ];
 
@@ -139,7 +172,14 @@ class InvoiceController extends Controller
     {
         $invoice->load('items');
         $products = Product::with('variants')->get();
-        return view('invoices.edit', compact('invoice', 'products'));
+        $gstSettings = [
+            'enabled' => Setting::get('gst_enabled', '0') === '1',
+            'type' => Setting::get('gst_type', 'exclusive'),
+            'percentage' => (float)Setting::get('gst_percentage', 0),
+            'cgst_percentage' => (float)Setting::get('cgst_percentage', 0),
+            'sgst_percentage' => (float)Setting::get('sgst_percentage', 0),
+        ];
+        return view('invoices.edit', compact('invoice', 'products', 'gstSettings'));
     }
 
     public function pdf(Request $request, Invoice $invoice)
@@ -190,14 +230,30 @@ class InvoiceController extends Controller
 
         DB::beginTransaction();
         try {
+            // GST Integration
+            $gstEnabled = Setting::get('gst_enabled', '0') === '1';
+            $gstPercentage = $gstEnabled ? (float)Setting::get('gst_percentage', 0) : 0;
+            $gstType = Setting::get('gst_type', 'exclusive');
+            
+            $gstOptions = [
+                'cgst_percentage' => (float)Setting::get('cgst_percentage', 0),
+                'sgst_percentage' => (float)Setting::get('sgst_percentage', 0),
+            ];
+
+            $gstDetails = $this->gstService->calculate($request->subtotal - $request->discount, $gstPercentage, $gstType, $gstOptions);
+
             $invoiceData = [
                 'customer_name' => $request->customer_name,
                 'phone' => $request->phone,
                 'address' => $request->address,
                 'subtotal' => $request->subtotal,
                 'discount' => $request->discount,
-                'gst' => $request->gst,
-                'total' => $request->total,
+                'gst_percentage' => $gstDetails['gst_percentage'],
+                'gst_amount' => $gstDetails['gst_amount'],
+                'cgst' => $gstDetails['cgst'],
+                'sgst' => $gstDetails['sgst'],
+                'gst_type' => $gstDetails['gst_type'],
+                'total' => $gstDetails['total'],
                 'notes' => $request->notes,
             ];
 
