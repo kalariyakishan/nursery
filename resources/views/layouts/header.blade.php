@@ -24,7 +24,7 @@
             
             <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary text-sm group-focus-within:text-primary transition-colors">search</span>
             
-            <input class="w-full bg-background border-border-light rounded-lg py-2 pl-10 pr-4 text-sm focus:border-primary focus:ring focus:ring-primary/10 transition-all font-sans placeholder-text-secondary/40" 
+            <input class="w-full bg-background border border-slate-200 rounded-lg py-2 pl-10 pr-4 text-sm focus:border-primary focus:ring focus:ring-primary/10 transition-all font-sans placeholder-text-secondary/40" 
                    placeholder="ગ્રાહક અથવા બિલ નંબર શોધો..." 
                    type="text"
                    x-model="query"

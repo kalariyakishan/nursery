@@ -13,6 +13,52 @@
             }
         </style>
 
+        <style>
+            @media print {
+                /* Structurally hide navigation instead of visibility: hidden (which causes blank pages out of bounds) */
+                aside, header, .no-print {
+                    display: none !important;
+                }
+
+                /* Reset Tailwind's layout wrappers so they don't pad or restrict width */
+                html, body, main {
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    width: 100% !important;
+                    height: auto !important;
+                    min-height: auto !important;
+                    background: white !important;
+                    display: block !important;
+                }
+
+                /* Remove flex formatting from parent columns that restricts printing */
+                .w-full.md\:w-3\/4.lg\:w-\[78\%\] {
+                    width: 100% !important;
+                    display: block !important;
+                }
+
+                /* Override preview scale transformations and let it be naturally 100% */
+                #capture-area {
+                    position: relative !important;
+                    transform: none !important;
+                    border: none !important;
+                    box-shadow: none !important;
+                    width: 100% !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    left: 0 !important;
+                    top: 0 !important;
+                }
+
+                /* Eliminate any tailwind overflow-hidden masks */
+                * {
+                    overflow: visible !important;
+                    -webkit-print-color-adjust: exact !important;
+                    print-color-adjust: exact !important;
+                }
+            }
+        </style>
+
         <div x-data="{ paperSize: 'a4' }" 
          x-init="
             const updatePrintStyle = (size) => {
@@ -102,7 +148,7 @@
 
                         <div class="printable-bill transition-all duration-500 ease-in-out bg-white shadow-[0_30px_60px_-15px_rgba(0,0,0,0.15)] ring-1 ring-black/5 origin-top scale-[0.65] lg:scale-[0.85] print:scale-100 print:shadow-none print:ring-0 print:border-none"
                             id="capture-area">
-                            <div class="print-area">
+                            <div id="print-area">
                                 @include('invoices.template')
                             </div>
                         </div>

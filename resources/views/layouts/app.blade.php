@@ -92,6 +92,7 @@
             });
         </script>
 
+        @stack('modals')
         @stack('footer')
     </body>
 </html>

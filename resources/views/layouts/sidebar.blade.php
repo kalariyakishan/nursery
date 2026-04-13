@@ -23,23 +23,84 @@
             <span class="gujarati-text text-sm">ડેશબોર્ડ</span>
         </a>
         
-        <a href="{{ route('invoices.create') }}" 
-           class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 {{ request()->routeIs('invoices.create') ? 'bg-primary text-white shadow-md font-semibold' : 'text-text-secondary hover:bg-background hover:text-primary' }}">
-            <span class="material-symbols-outlined text-[20px]" style="{{ request()->routeIs('invoices.create') ? "font-variation-settings: 'FILL' 1;" : '' }}">receipt_long</span>
-            <span class="gujarati-text text-sm">નવું ઇન્વોઇસ</span>
-        </a>
-
-        <a href="{{ route('invoices.index') }}" 
-           class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 {{ request()->routeIs('invoices.index') ? 'bg-primary text-white shadow-md font-semibold' : 'text-text-secondary hover:bg-background hover:text-primary' }}">
-            <span class="material-symbols-outlined text-[20px]" style="{{ request()->routeIs('invoices.index') ? "font-variation-settings: 'FILL' 1;" : '' }}">history</span>
-            <span class="gujarati-text text-sm">ઇન્વોઇસ હિસ્ટ્રી</span>
-        </a>
+        <!-- Invoice Management Dropdown -->
+        <div x-data="{ invoiceOpen: {{ request()->routeIs('invoices.*') ? 'true' : 'false' }} }">
+            <button @click="invoiceOpen = !invoiceOpen" 
+                class="w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-200 {{ request()->routeIs('invoices.*') ? 'bg-background text-primary font-bold' : 'text-text-secondary hover:bg-background hover:text-primary' }}">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-[20px]" style="{{ request()->routeIs('invoices.*') ? "font-variation-settings: 'FILL' 1;" : '' }}">receipt_long</span>
+                    <span class="gujarati-text text-sm">ઇન્વોઇસ મેનેજમેન્ટ</span>
+                </div>
+                <span class="material-symbols-outlined text-[18px] transition-transform duration-200" :class="invoiceOpen ? 'rotate-180' : ''">expand_more</span>
+            </button>
+            
+            <div x-show="invoiceOpen" 
+                 x-transition:enter="transition ease-out duration-200" 
+                 x-transition:enter-start="opacity-0 -translate-y-2" 
+                 x-transition:enter-end="opacity-100 translate-y-0"
+                 class="ml-10 mt-1 border-l border-border-light/60 pl-2">
+                
+                <a href="{{ route('invoices.create') }}" 
+                   class="flex items-center px-4 py-2.5 rounded-lg text-sm transition-all {{ request()->routeIs('invoices.create') ? 'text-primary font-bold bg-primary/10' : 'text-text-secondary hover:text-primary hover:bg-background' }}">
+                    <span class="gujarati-text">નવું ઇન્વોઇસ બનાવો</span>
+                </a>
+                
+                <a href="{{ route('invoices.index') }}" 
+                   class="flex items-center px-4 py-2.5 rounded-lg text-sm transition-all {{ request()->routeIs('invoices.index') ? 'text-primary font-bold bg-primary/10' : 'text-text-secondary hover:text-primary hover:bg-background' }}">
+                    <span class="gujarati-text">ઇન્વોઇસ હિસ્ટ્રી</span>
+                </a>
+            </div>
+        </div>
         
         <a href="{{ route('products.index') }}" 
            class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 {{ request()->routeIs('products.*') ? 'bg-primary text-white shadow-md font-semibold' : 'text-text-secondary hover:bg-background hover:text-primary' }}">
             <span class="material-symbols-outlined text-[20px]" style="{{ request()->routeIs('products.*') ? "font-variation-settings: 'FILL' 1;" : '' }}">inventory_2</span>
             <span class="gujarati-text text-sm">પ્રોડક્ટ મેનેજમેન્ટ</span>
         </a>
+
+        <!-- Labour Management Dropdown -->
+        <div x-data="{ labourOpen: {{ request()->routeIs('labour-entries.*', 'advances.*', 'workers.*', 'reports.labour*') ? 'true' : 'false' }} }">
+            <button @click="labourOpen = !labourOpen" 
+                class="w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-200 {{ request()->routeIs('labour-entries.*', 'advances.*', 'workers.*', 'reports.labour*') ? 'bg-background text-primary font-bold' : 'text-text-secondary hover:bg-background hover:text-primary' }}">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-[20px]" style="{{ request()->routeIs('labour-entries.*', 'advances.*', 'workers.*', 'reports.labour*') ? "font-variation-settings: 'FILL' 1;" : '' }}">engineering</span>
+                    <span class="gujarati-text text-sm">મજૂરી મેનેજમેન્ટ</span>
+                </div>
+                <span class="material-symbols-outlined text-[18px] transition-transform duration-200" :class="labourOpen ? 'rotate-180' : ''">expand_more</span>
+            </button>
+            
+            <div x-show="labourOpen" 
+                 x-transition:enter="transition ease-out duration-200" 
+                 x-transition:enter-start="opacity-0 -translate-y-2" 
+                 x-transition:enter-end="opacity-100 translate-y-0"
+                 class="ml-10 mt-1 border-l border-border-light/60 pl-2">
+                
+                <a href="{{ route('labour-entries.index') }}" 
+                   class="flex items-center px-4 py-2.5 rounded-lg text-sm transition-all {{ request()->routeIs('labour-entries.*') ? 'text-primary font-bold bg-primary/10' : 'text-text-secondary hover:text-primary hover:bg-background' }}">
+                    <span class="gujarati-text">ડેઈલી હજરી એન્ટ્રી</span>
+                </a>
+                
+                <a href="{{ route('advances.index') }}" 
+                   class="flex items-center px-4 py-2.5 rounded-lg text-sm transition-all {{ request()->routeIs('advances.*') ? 'text-red-600 font-bold bg-red-50' : 'text-text-secondary hover:text-red-600 hover:bg-background' }}">
+                    <span class="gujarati-text">મજૂર ઉપાડ (Upad)</span>
+                </a>
+                
+                <a href="{{ route('workers.index') }}" 
+                   class="flex items-center px-4 py-2.5 rounded-lg text-sm transition-all {{ request()->routeIs('workers.*') ? 'text-primary font-bold bg-primary/10' : 'text-text-secondary hover:text-primary hover:bg-background' }}">
+                    <span class="gujarati-text">મજૂર લિસ્ટ</span>
+                </a>
+                
+                <a href="{{ route('reports.labour') }}" 
+                   class="flex items-center px-4 py-2.5 rounded-lg text-sm transition-all {{ request()->routeIs('reports.labour') ? 'text-primary font-bold bg-primary/10' : 'text-text-secondary hover:text-primary hover:bg-background' }}">
+                    <span class="gujarati-text">સેટલમેન્ટ રીપોર્ટ</span>
+                </a>
+                
+                <a href="{{ route('reports.labour.ledger') }}" 
+                   class="flex items-center px-4 py-2.5 rounded-lg text-sm transition-all {{ request()->routeIs('reports.labour.ledger') ? 'text-primary font-bold bg-primary/10' : 'text-text-secondary hover:text-primary hover:bg-background' }}">
+                    <span class="gujarati-text">મજૂર લેજર</span>
+                </a>
+            </div>
+        </div>
 
         <a href="{{ route('settings.index') }}" 
            class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 {{ request()->routeIs('settings.*') ? 'bg-primary text-white shadow-md font-semibold' : 'text-text-secondary hover:bg-background hover:text-primary' }}">
