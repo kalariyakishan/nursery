@@ -125,6 +125,12 @@ class ProductController extends Controller
         return redirect()->route('products.index')->with('success', 'પ્રોડક્ટ સફળતાપૂર્વક કાઢી નાખવામાં આવી.');
     }
 
+    public function deleteAll()
+    {
+        Product::query()->delete();
+        return redirect()->route('products.index')->with('success', 'બધી પ્રોડક્ટ્સ સફળતાપૂર્વક કાઢી નાખવામાં આવી.');
+    }
+
     public function import(Request $request)
     {
         $request->validate([

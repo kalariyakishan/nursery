@@ -43,10 +43,20 @@
             <h2 class="text-3xl font-black text-text-primary gujarati-text tracking-tight mb-2">પ્રોડક્ટ મેનેજમેન્ટ (Inventory)</h2>
             <p class="text-text-secondary font-semibold tracking-wider text-xs uppercase opacity-70">બધા છોડ અને વેરિઅન્ટ્સનું સંચાલન</p>
         </div>
-        <a href="{{ route('products.create') }}" class="primary-btn px-10 py-4 gujarati-text shadow-xl shadow-primary/20">
-            <span class="material-symbols-outlined">add_circle</span>
-            નવી પ્રોડક્ટ ઉમેરો
-        </a>
+        <div class="flex items-center gap-3">
+            <form action="{{ route('products.delete_all') }}" method="POST" onsubmit="return confirm('શું તમે ખરેખર બધી પ્રોડક્ટ્સ કાઢી નાખવા માંગો છો? આ ક્રિયા પાછી લાવી શકાશે નહીં.');">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="secondary-btn h-12 px-6 text-red-600 hover:bg-red-50 border-red-100 gujarati-text">
+                    <span class="material-symbols-outlined">delete_sweep</span>
+                    બધી પ્રોડક્ટ્સ કાઢી નાખો
+                </button>
+            </form>
+            <a href="{{ route('products.create') }}" class="primary-btn px-10 py-4 gujarati-text shadow-xl shadow-primary/20">
+                <span class="material-symbols-outlined">add_circle</span>
+                નવી પ્રોડક્ટ ઉમેરો
+            </a>
+        </div>
     </div>
 
 

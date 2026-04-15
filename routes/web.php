@@ -29,6 +29,7 @@ Route::get('/dashboard', function () {
 Route::middleware('auth')->group(function () {
     Route::get('products/data', [App\Http\Controllers\ProductController::class, 'getData'])->name('products.data');
     Route::post('products/import', [App\Http\Controllers\ProductController::class, 'import'])->name('products.import');
+    Route::delete('products/delete-all', [App\Http\Controllers\ProductController::class, 'deleteAll'])->name('products.delete_all');
     Route::resource('products', ProductController::class);
     
     Route::get('invoices/data', [InvoiceController::class, 'getData'])->name('invoices.data');
