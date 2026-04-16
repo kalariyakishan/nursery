@@ -26,7 +26,7 @@
             </div>
         </div>
 
-        <form id="invoiceForm" action="{{ route('invoices.store') }}" method="POST">
+        <form id="invoiceForm" action="{{ route('invoices.store') }}" method="POST" autocomplete="off">
             @csrf
             <div class="grid grid-cols-12 gap-8 pb-32">
                 <!-- Left Section: Customer Info + Product Selector -->
@@ -38,12 +38,60 @@
                             ગ્રાહકની માહિતી
                         </h3>
                         <div class="space-y-4">
-                            <div>
+                            <div class="relative" x-on:click.away="showCustomerDropdown = false">
                                 <label
                                     class="text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-1.5 block">ગ્રાહકનું
                                     નામ (Customer Name)</label>
-                                <input name="customer_name" required class="input-field gujarati-text font-bold text-lg @error('customer_name') border-red-500 @enderror"
-                                    placeholder="અમિતભાઈ શાહ..." type="text" value="{{ old('customer_name') }}" />
+                                <input name="customer_name" required 
+                                    x-model="customerName"
+                                    @input.debounce.300ms="searchCustomers()"
+                                    @keydown.down.prevent="navigateDropdown('down')"
+                                    @keydown.up.prevent="navigateDropdown('up')"
+                                    @keydown.enter.prevent="selectHighlighted()"
+                                    @focus="if(customers.length > 0) showCustomerDropdown = true"
+                                    class="input-field gujarati-text font-bold text-lg @error('customer_name') border-red-500 @enderror"
+                                    placeholder="અમિતભાઈ શાહ..." type="text" autocomplete="disabled" />
+                                
+                                <!-- Dropdown -->
+                                <div x-show="showCustomerDropdown" 
+                                    class="absolute z-50 w-full mt-1 bg-white border border-border-light rounded-xl shadow-2xl overflow-hidden max-h-60 overflow-y-auto"
+                                    x-transition:enter="transition ease-out duration-100"
+                                    x-transition:enter-start="opacity-0 transform -translate-y-2"
+                                    x-transition:enter-end="opacity-100 transform translate-y-0">
+                                    <template x-if="isSearching">
+                                        <div class="p-4 text-center text-xs font-bold text-text-secondary flex items-center justify-center gap-2">
+                                            <div class="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                                            Searching...
+                                        </div>
+                                    </template>
+                                    <template x-if="!isSearching && customers.length === 0">
+                                        <div class="p-4 text-center text-xs font-bold text-red-500">
+                                            No customer found. You can enter manually.
+                                        </div>
+                                    </template>
+                                    <template x-for="(c, index) in customers" :key="index">
+                                        <div @click="selectCustomer(c)"
+                                            :class="{'bg-primary/5 text-primary': selectedIndex === index, 'text-text-primary hover:bg-background': selectedIndex !== index}"
+                                            class="p-4 cursor-pointer border-b border-border-light/50 last:border-0 transition-colors group">
+                                            <div class="flex flex-col">
+                                                <span class="font-bold text-sm gujarati-text" x-text="c.name"></span>
+                                                <div class="flex items-center gap-3 mt-1">
+                                                    <span class="text-[10px] opacity-60 flex items-center gap-1">
+                                                        <span class="material-symbols-outlined text-[14px]">call</span>
+                                                        <span x-text="c.mobile || 'No Mobile'"></span>
+                                                    </span>
+                                                    <template x-if="c.address">
+                                                        <span class="text-[10px] opacity-60 flex items-center gap-1">
+                                                            <span class="material-symbols-outlined text-[14px]">location_on</span>
+                                                            <span x-text="c.address"></span>
+                                                        </span>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+
                                 @error('customer_name')
                                     <p class="text-red-500 text-[10px] font-bold mt-1">{{ $message }}</p>
                                 @enderror
@@ -52,8 +100,8 @@
                                 <label
                                     class="text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-1.5 block">મોબાઇલ
                                     નંબર (Mobile)</label>
-                                <input name="phone" class="input-field font-bold tracking-widest @error('phone') border-red-500 @enderror"
-                                    placeholder="99245xxxxx" type="tel" value="{{ old('phone') }}" />
+                                <input name="phone" x-model="customerPhone" class="input-field font-bold tracking-widest @error('phone') border-red-500 @enderror"
+                                    placeholder="99245xxxxx" type="tel" autocomplete="disabled" />
                                 @error('phone')
                                     <p class="text-red-500 text-[10px] font-bold mt-1">{{ $message }}</p>
                                 @enderror
@@ -62,9 +110,9 @@
                                 <label
                                     class="text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-1.5 block">સરનામું
                                     (Address)</label>
-                                <textarea name="address"
+                                <textarea name="address" x-model="customerAddress"
                                     class="block w-full rounded-lg border-border-light shadow-sm focus:border-primary focus:ring focus:ring-primary/10 bg-white transition-all gujarati-text p-4 font-semibold text-sm placeholder-text-secondary/20 resize-none @error('address') border-red-500 @enderror"
-                                    placeholder="મોડાસા, ગુજરાત" rows="2">{{ old('address') }}</textarea>
+                                    placeholder="મોડાસા, ગુજરાત" rows="2" autocomplete="disabled"></textarea>
                                 @error('address')
                                     <p class="text-red-500 text-[10px] font-bold mt-1">{{ $message }}</p>
                                 @enderror
@@ -306,6 +354,15 @@
                 sgstAmount: 0,
                 grandTotal: 0,
                 search: '',
+                
+                // Customer Autocomplete State
+                customerName: {!! json_encode(old('customer_name')) !!},
+                customerPhone: {!! json_encode(old('phone')) !!},
+                customerAddress: {!! json_encode(old('address')) !!},
+                customers: [],
+                showCustomerDropdown: false,
+                isSearching: false,
+                selectedIndex: -1,
 
                 init() {
                     const oldItems = @json(old('items'));
@@ -417,6 +474,62 @@
                     const currentItem = this.items[index];
                     if (field === 'qty') document.getElementById('qty-' + index)?.focus();
                     if (field === 'price') document.getElementById('price-' + index)?.focus();
+                },
+
+                async searchCustomers() {
+                    if (this.customerName.length < 2) {
+                        this.customers = [];
+                        this.showCustomerDropdown = false;
+                        return;
+                    }
+
+                    this.isSearching = true;
+                    this.showCustomerDropdown = true;
+                    this.selectedIndex = -1;
+
+                    try {
+                        const response = await fetch(`/api/customers/search?query=${encodeURIComponent(this.customerName)}`);
+                        this.customers = await response.json();
+                    } catch (error) {
+                        console.error('Error fetching customers:', error);
+                    } finally {
+                        this.isSearching = false;
+                    }
+                },
+
+                selectCustomer(customer) {
+                    this.customerName = customer.name;
+                    this.customerPhone = customer.mobile || '';
+                    this.customerAddress = customer.address || '';
+                    this.showCustomerDropdown = false;
+                    this.customers = [];
+                    this.selectedIndex = -1;
+                },
+
+                navigateDropdown(direction) {
+                    if (this.customers.length === 0) return;
+
+                    if (direction === 'down') {
+                        this.selectedIndex = (this.selectedIndex + 1) % this.customers.length;
+                    } else if (direction === 'up') {
+                        this.selectedIndex = (this.selectedIndex - 1 + this.customers.length) % this.customers.length;
+                    }
+                    
+                    // Scroll into view if needed
+                    this.$nextTick(() => {
+                        const activeItem = this.$el.querySelector('.bg-primary\\/5');
+                        if (activeItem) {
+                            activeItem.scrollIntoView({ block: 'nearest' });
+                        }
+                    });
+                },
+
+                selectHighlighted() {
+                    if (this.selectedIndex >= 0 && this.selectedIndex < this.customers.length) {
+                        this.selectCustomer(this.customers[this.selectedIndex]);
+                    } else {
+                        this.showCustomerDropdown = false;
+                    }
                 }
             }
         }

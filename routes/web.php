@@ -39,6 +39,7 @@ Route::middleware('auth')->group(function () {
     Route::get('settings', [App\Http\Controllers\SettingController::class, 'index'])->name('settings.index');
     Route::post('settings', [App\Http\Controllers\SettingController::class, 'update'])->name('settings.update');
 
+    Route::get('/api/customers/search', [App\Http\Controllers\CustomerApiController::class, 'search'])->name('customers.search');
     Route::get('/api/search', function (Illuminate\Http\Request $request) {
         $query = $request->get('q');
         if (!$query) return response()->json([]);
