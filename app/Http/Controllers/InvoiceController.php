@@ -291,21 +291,4 @@ class InvoiceController extends Controller
         $invoice->delete();
         return redirect()->route('invoices.index')->with('success', 'ઇન્વોઇસ સફળતાપૂર્વક કાઢી નાખવામાં આવ્યું.');
     }
-
-    public function searchCustomers(Request $request)
-    {
-        $query = $request->get('query');
-        if (strlen($query) < 2) {
-            return response()->json([]);
-        }
-
-        $customers = Invoice::select('customer_name as name', 'phone as mobile', 'address')
-            ->where('customer_name', 'like', "%{$query}%")
-            ->orWhere('phone', 'like', "%{$query}%")
-            ->groupBy('name', 'mobile', 'address')
-            ->limit(10)
-            ->get();
-
-        return response()->json($customers);
-    }
 }

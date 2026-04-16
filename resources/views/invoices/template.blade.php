@@ -7,7 +7,6 @@
         color: #000;
         box-sizing: border-box;
         position: relative;
-        overflow: hidden;
     }
     
     .invoice-wrapper * {
@@ -41,13 +40,11 @@
     /* Common layout elements */
     .invoice-border {
         border: 2px solid rgba(22, 101, 52, 0.2);
-        padding: 8px;
-        min-height: calc(297mm - 24mm); /* Fixed height for A4 to prevent page break */
+        padding: 10px;
+        min-height: calc(297mm - 24mm); /* A4 height minus padding */
         position: relative;
         display: flex;
         flex-direction: column;
-        page-break-inside: avoid;
-        break-inside: avoid;
     }
     .a5 .invoice-border {
         min-height: calc(210mm - 12mm);
@@ -143,8 +140,8 @@
     .items-table th {
         background: rgba(22, 101, 52, 0.05);
         color: #166534;
-        padding: 4px 10px;
-        font-size: 9.5pt;
+        padding: 6px 10px;
+        font-size: 10pt;
         text-transform: uppercase;
         border-bottom: 2px solid rgba(22, 101, 52, 0.3);
         border-right: 1px solid rgba(22, 101, 52, 0.3);
@@ -153,67 +150,63 @@
     .items-table th:last-child { border-right: none; }
     
     .items-table td {
-        padding: 2.5px 10px;
+        padding: 5px 10px;
         border-right: 1px solid rgba(22, 101, 52, 0.3);
         word-break: break-word;
         page-break-inside: avoid;
-        font-size: 9.5pt;
-        line-height: 1.05;
+        font-size: 10.5pt;
+        line-height: 1.15;
     }
     .a5 .items-table td { font-size: 8.5pt; padding: 4px 6px; }
     .items-table td:last-child { border-right: none; }
 
     .items-table tr.empty-row td {
         color: transparent;
-        height: 18px;
+        height: 25px;
     }
     .a5 .items-table tr.empty-row td { height: 25px; }
     .a5 .extra-row-a5 { display: none; }
 
 
     .tfoot-label {
-        padding: 4px 15px;
+        padding: 6px 15px;
         text-align: right;
         font-style: italic;
         opacity: 0.6;
         text-transform: uppercase;
         border-right: 1px solid rgba(22, 101, 52, 0.3);
-        border-top: 1px solid rgba(22, 101, 52, 0.15);
-        font-size: 8pt;
-    }
-    .items-table tfoot tr:first-child td {
         border-top: 2px solid rgba(22, 101, 52, 0.3);
+        font-size: 9pt;
     }
     .a5 .tfoot-label { font-size: 7.5pt; padding: 4px 8px; }
     .tfoot-value {
-        padding: 4px 15px;
+        padding: 6px 15px;
         text-align: right;
-        border-top: 1px solid rgba(22, 101, 52, 0.15);
-        font-size: 8pt;
-        font-weight: bold;
+        border-top: 2px solid rgba(22, 101, 52, 0.3);
+        font-size: 10pt;
     }
-    .a5 .tfoot-value { font-size: 8pt; padding: 4px 8px; }
+    .a5 .tfoot-value { font-size: 8.5pt; padding: 4px 8px; }
     .highlight-red { color: #dc2626; opacity: 1; border-top: 1px solid rgba(22, 101, 52, 0.1); }
     
     .total-row td {
         border-top: 2px solid rgba(22, 101, 52, 0.3);
-        padding: 8px 15px;
+        padding: 15px;
     }
     .total-label {
         text-align: right;
         text-transform: uppercase;
         font-style: italic;
-        font-weight: 950;
-        font-size: 12pt;
+        font-weight: 900;
+        font-size: 14pt;
         border-right: 1px solid rgba(22, 101, 52, 0.3);
     }
     .a5 .total-label { font-size: 11pt; }
     .total-value {
         text-align: right;
-        font-size: 14pt;
+        font-size: 16pt;
         color: #166534;
         background: rgba(22, 101, 52, 0.05);
-        font-weight: 950;
+        font-weight: 900;
     }
     .a5 .total-value { font-size: 13pt; }
     
@@ -256,13 +249,13 @@
     .jurisdiction {
         text-align: center;
         border-top: 1px solid rgba(22, 101, 52, 0.1);
-        padding-top: 5px;
-        margin-top: 10px;
-        font-size: 8px;
+        padding-top: 10px;
+        margin-top: 20px;
+        font-size: 9px;
         font-weight: bold;
         text-transform: uppercase;
         opacity: 0.2;
-        letter-spacing: 2px;
+        letter-spacing: 3px;
     }
 
     .watermark-box {
@@ -381,7 +374,7 @@
                             <td style="text-align: right; font-weight: 900;">₹{{ number_format($item->total, 2) }}</td>
                         </tr>
                     @endforeach
-                    @for($i = $rowCount; $i < 20; $i++)
+                    @for($i = $rowCount; $i < 12; $i++)
                         <tr class="empty-row {{ $i >= 8 ? 'extra-row-a5' : '' }}">
 
                             <td style="text-align: center;">&nbsp;</td>
@@ -435,7 +428,7 @@
         </div>
 
         <!-- Bottom Section (Notes, Bank, Signature) -->
-        <div style="margin-top: auto; width: 100%; padding-top: 10px;">
+        <div style="margin-top: auto; width: 100%;">
             <table class="footer-table" width="100%">
                 <tr>
                     <td width="60%" style="vertical-align: bottom;">

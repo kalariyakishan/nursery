@@ -53,8 +53,6 @@ Route::middleware('auth')->group(function () {
         return response()->json($invoices);
     })->name('api.search');
 
-    Route::get('/api/customers/search', [InvoiceController::class, 'searchCustomers'])->name('api.customers.search');
-
     Route::resource('workers', App\Http\Controllers\WorkerController::class);
     
     Route::get('labour-entries/data', [App\Http\Controllers\LabourEntryController::class, 'getData'])->name('labour-entries.data');
