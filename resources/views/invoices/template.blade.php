@@ -51,12 +51,12 @@
     }
     .company-title {
         font-family: 'Times New Roman', serif;
-        font-size: 20pt;
+        font-size: 18pt;
         font-weight: 900;
         color: #166534;
         text-transform: uppercase;
-        margin: 0 0 3px 0;
-        letter-spacing: -1px;
+        margin: 0 0 2px 0;
+        letter-spacing: -0.5px;
     }
     .a5 .company-title { font-size: 15pt; }
     
@@ -130,7 +130,7 @@
     .items-table-container {
         border: 2px solid rgba(22, 101, 52, 0.3);
         border-radius: 8px;
-        margin-bottom: 20px;
+        margin-bottom: 8px;
     }
     .items-table {
         table-layout: fixed;
@@ -150,21 +150,21 @@
     .items-table th:last-child { border-right: none; }
     
     .items-table td {
-        padding: 5px 10px;
+        padding: 3px 10px;
         border-right: 1px solid rgba(22, 101, 52, 0.3);
         word-break: break-word;
         page-break-inside: avoid;
         font-size: 10.5pt;
-        line-height: 1.15;
+        line-height: 1.1;
     }
     .a5 .items-table td { font-size: 8.5pt; padding: 4px 6px; }
     .items-table td:last-child { border-right: none; }
 
     .items-table tr.empty-row td {
         color: transparent;
-        height: 25px;
+        height: 20px;
     }
-    .a5 .items-table tr.empty-row td { height: 25px; }
+    .a5 .items-table tr.empty-row td { height: 18px; }
     .a5 .extra-row-a5 { display: none; }
 
 
@@ -221,6 +221,7 @@
         border-radius: 8px;
         background: rgba(22, 101, 52, 0.02);
         margin-bottom: 5px;
+        margin-top: 2px;
         font-size: 8.5pt;
     }
     .a5 .notes-box, .a5 .bank-box { font-size: 7pt; padding: 5px 8px; }
@@ -246,17 +247,7 @@
         margin-top: 5px;
         opacity: 0.4;
     }
-    .jurisdiction {
-        text-align: center;
-        border-top: 1px solid rgba(22, 101, 52, 0.1);
-        padding-top: 10px;
-        margin-top: 20px;
-        font-size: 9px;
-        font-weight: bold;
-        text-transform: uppercase;
-        opacity: 0.2;
-        letter-spacing: 3px;
-    }
+
 
     .watermark-box {
         position: absolute;
@@ -293,7 +284,7 @@
             <tr>
                 <td width="20%" style="vertical-align: middle; text-align: left;">
                     <img src="{{ public_path('images/logo.png') }}" onerror="this.src='{{ asset('images/logo.png') }}'" 
-                         style="height: 90px; width: auto; object-fit: contain;" alt="Nursery Logo">
+                         style="height: 70px; width: auto; object-fit: contain;" alt="Nursery Logo">
                 </td>
                 <td width="57%" style="text-align: center; vertical-align: middle;">
                     <h1 class="company-title" style="margin-bottom: 5px; white-space: nowrap;">
@@ -450,7 +441,7 @@
                     </td>
                     <td width="40%" style="vertical-align: bottom; text-align: right;">
                         <div class="signature-box">
-                            <div style="font-size: 11px; font-weight: bold; font-style: italic; opacity: 0.6; margin-bottom: 30px;">
+                            <div style="font-size: 11px; font-weight: bold; font-style: italic; opacity: 0.6; margin-bottom: 20px;">
                                 For, New Vrundavan Nursery.
                             </div>
                             <div class="signature-line"></div>
@@ -460,7 +451,7 @@
                 </tr>
             </table>
             
-            <div class="jurisdiction">Subject to Junagadh Jurisdiction</div>
+
         </div>
     </div>
 </div>

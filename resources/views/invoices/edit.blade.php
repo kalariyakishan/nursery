@@ -352,11 +352,16 @@
                 },
 
                 addItem() {
-                    if (this.items.length >= 17) {
+                    const limit = this.gstSettings.enabled ? 20 : 25;
+                    const message = this.gstSettings.enabled 
+                        ? 'તમે GST સાથે એક ઇન્વોઇસમાં વધુમાં વધુ 20 આઈટમ ઉમેરી શકો છો.' 
+                        : 'તમે GST વગર એક ઇન્વોઇસમાં વધુમાં વધુ 25 આઈટમ ઉમેરી શકો છો.';
+
+                    if (this.items.length >= limit) {
                         if (window.showToast) {
-                            window.showToast('તમે એક ઇન્વોઇસમાં વધુમાં વધુ 17 આઈટમ ઉમેરી શકો છો. મહેરબાની કરીને નવું બિલ બનાવો.', 'error');
+                            window.showToast(message, 'error');
                         } else {
-                            alert('તમે એક ઇન્વોઇસમાં વધુમાં વધુ 17 આઈટમ ઉમેરી શકો છો. મહેરબાની કરીને નવું બિલ બનાવો.');
+                            alert(message);
                         }
                         return;
                     }
