@@ -189,7 +189,8 @@ class InvoiceController extends Controller
         $paperSize = $request->query('paper_size', 'a4');
         $isPdf = true;
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('invoices.show', compact('invoice', 'paperSize', 'isPdf'));
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('invoices.show', compact('invoice', 'paperSize', 'isPdf'))
+            ->setOption('isPhpEnabled', true);
         
         switch ($paperSize) {
             case 'a5':

@@ -149,7 +149,11 @@
                         <div class="printable-bill transition-all duration-500 ease-in-out bg-white shadow-[0_30px_60px_-15px_rgba(0,0,0,0.15)] ring-1 ring-black/5 origin-top scale-[0.65] lg:scale-[0.85] print:scale-100 print:shadow-none print:ring-0 print:border-none"
                             id="capture-area">
                             <div id="print-area">
-                                @include('invoices.template')
+                                @if(isset($isPdf) && $isPdf)
+                                    @include('invoices.template')
+                                @else
+                                    @include('invoices.print_template')
+                                @endif
                             </div>
                         </div>
 

@@ -211,9 +211,9 @@
 
                     <!-- Summary Grid -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="card-surface p-6">
+                        <div class="card-surface p-6 opacity-60 pointer-events-none">
                             <label class="text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-3 block opacity-60">મોટી નોંધ (Extra Notes)</label>
-                            <textarea name="notes" class="block w-full rounded-lg border-border-light shadow-sm focus:border-primary focus:ring-1 focus:ring-primary/20 bg-background/30 p-4 text-xs font-bold gujarati-text placeholder-text-secondary/20 resize-none" 
+                            <textarea name="notes" readonly class="block w-full rounded-lg border-border-light shadow-sm focus:border-primary focus:ring-1 focus:ring-primary/20 bg-background/30 p-4 text-xs font-bold gujarati-text placeholder-text-secondary/20 resize-none" 
                                       placeholder="કોઈ ખાસ સૂચના લખો..." rows="4">{{ $invoice->notes }}</textarea>
                         </div>
                         <div class="card-surface p-6 space-y-3 bg-white border-primary/10">
@@ -221,10 +221,10 @@
                                 <span class="text-text-secondary text-xs uppercase font-bold opacity-60">Subtotal</span>
                                 <span class="font-bold text-sm tracking-tight" x-text="'₹ ' + subtotal.toLocaleString('en-IN', {minimumFractionDigits: 2})"></span>
                             </div>
-                            <div class="flex justify-between items-center px-4 py-3 bg-red-50/50 rounded-lg">
+                            <div class="flex justify-between items-center px-4 py-3 bg-red-50/50 rounded-lg opacity-60 pointer-events-none">
                                 <span class="text-red-700 text-xs font-bold uppercase">Discount</span>
                                 <div class="flex items-center gap-2">
-                                    <input type="number" x-model.number="discount" class="w-20 h-8 border-none bg-white rounded shadow-sm text-center text-xs font-bold text-red-600 focus:ring-1 focus:ring-red-200">
+                                    <input type="number" x-model.number="discount" readonly class="w-20 h-8 border-none bg-white rounded shadow-sm text-center text-xs font-bold text-red-600 focus:ring-1 focus:ring-red-200">
                                     <span class="font-bold text-xs text-red-700" x-text="'- ₹' + discount.toLocaleString('en-IN', {minimumFractionDigits: 2})"></span>
                                 </div>
                             </div>
