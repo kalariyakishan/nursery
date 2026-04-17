@@ -47,9 +47,9 @@ function gujaratiAmountInWordsPrint($number) {
     box-sizing: border-box;
 }
 
-.print-wrapper.a4 { width: 210mm; min-height: auto; padding: 12mm; font-size: 12px; line-height: 1.3; }
-.print-wrapper.a5 { width: 148mm; min-height: 210mm; padding: 10mm; font-size: 11px; line-height: 1.2; }
-.print-wrapper.letter { width: 215.9mm; min-height: 279.4mm; padding: 12mm; font-size: 12px; line-height: 1.3; }
+.print-wrapper.a4 { width: 210mm; min-height: auto; padding: 12mm; font-size: 12px; line-height: 1.35; }
+.print-wrapper.a5 { width: 148mm; min-height: 210mm; padding: 8mm; font-size: 11px; line-height: 1.25; }
+.print-wrapper.letter { width: 215.9mm; min-height: 279.4mm; padding: 12mm; font-size: 12px; line-height: 1.35; }
 
 /* Theme Colors */
 :root {
@@ -81,7 +81,7 @@ function gujaratiAmountInWordsPrint($number) {
 .pt-strip {
     height: 6px;
     background: var(--brand-dark);
-    margin-bottom: 12px;
+    margin-bottom: 14px;
     border-radius: 4px;
 }
 
@@ -209,9 +209,9 @@ function gujaratiAmountInWordsPrint($number) {
 .pt-detail-row {
     display: flex;
     justify-content: space-between;
-    padding: 8px 0;
+    padding: 6px 0;
     border-bottom: 1px dashed var(--border-color);
-    font-size: 13px;
+    font-size: 12px;
 }
 
 .pt-detail-row:last-child {
@@ -230,7 +230,7 @@ function gujaratiAmountInWordsPrint($number) {
 
 /* Table Style */
 .pt-table-container {
-    margin-bottom: 12px;
+    margin-bottom: 16px;
 }
 
 .pt-table {
@@ -240,9 +240,9 @@ function gujaratiAmountInWordsPrint($number) {
 }
 
 .pt-table th, .pt-table td {
-    padding: 6px 8px;
+    padding: 6px 10px;
     border: 1px solid var(--border-color);
-    line-height: 1.3;
+    line-height: 1.35;
 }
 
 .pt-table th {
@@ -294,7 +294,7 @@ function gujaratiAmountInWordsPrint($number) {
     align-items: flex-start;
     gap: 16px;
     page-break-inside: avoid;
-    margin-top: 16px;
+    margin-top: 12px;
 }
 
 .pt-notes-area {
@@ -384,8 +384,14 @@ function gujaratiAmountInWordsPrint($number) {
 
 @media print {
     body { margin: 0; background: white !important; }
-    .print-wrapper { box-shadow: none !important; border: none !important; margin: 0 !important; width: 100% !important; }
-    @page { margin: 10mm; size: A4; }
+    .print-wrapper { 
+        box-shadow: none !important; 
+        border: none !important; 
+        margin: 0 !important; 
+        width: 100% !important; 
+        padding: 5mm !important; 
+    }
+    @page { margin: 8mm; size: A4; }
     
     .pt-page {
         page-break-after: always;
@@ -408,6 +414,12 @@ function gujaratiAmountInWordsPrint($number) {
     .pt-totals-wrapper, .pt-words, .pt-footer {
         page-break-inside: avoid;
     }
+
+    .pt-strip { margin-bottom: 10px !important; }
+    .pt-header { padding-bottom: 8px !important; margin-bottom: 8px !important; }
+    .pt-meta { margin-bottom: 12px !important; }
+    .pt-table-container { margin-bottom: 8px !important; }
+    .pt-totals-wrapper { margin-top: 10px !important; }
 }
 
 .currency-txt { 
@@ -428,9 +440,9 @@ function gujaratiAmountInWordsPrint($number) {
             $current_page_items = [];
             $page_index = 0;
             
-            $limit_first_page = 22; 
-            $limit_other_page = 27; 
-            $limit_first_with_footer = 12;
+            $limit_first_page = 24; 
+            $limit_other_page = 26; 
+            $limit_first_with_footer = 18;
             $limit_other_with_footer = 18;
 
             foreach($all_items as $idx => $it) {
@@ -570,7 +582,7 @@ function gujaratiAmountInWordsPrint($number) {
                                 
                                 // Determine the target row count to fill the page
                                 if ($is_last) {
-                                    $fill_limit = $is_first ? $limit_first_with_footer : $limit_other_with_footer;
+                                    $fill_limit = $rowCount; // Dynamic: No extra empty rows on last page
                                 } else {
                                     $fill_limit = $is_first ? $limit_first_page : $limit_other_page;
                                 }
