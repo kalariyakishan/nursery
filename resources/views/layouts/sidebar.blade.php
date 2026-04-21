@@ -58,6 +58,12 @@
             <span class="gujarati-text text-sm">પ્રોડક્ટ મેનેજમેન્ટ</span>
         </a>
 
+        <a href="{{ route('rojmel.index') }}" 
+           class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 {{ request()->routeIs('rojmel.*') ? 'bg-primary text-white shadow-md font-semibold' : 'text-text-secondary hover:bg-background hover:text-primary' }}">
+            <span class="material-symbols-outlined text-[20px]" style="{{ request()->routeIs('rojmel.*') ? "font-variation-settings: 'FILL' 1;" : '' }}">account_balance_wallet</span>
+            <span class="gujarati-text text-sm">ડેઈલી રોકડમેળ (Rojmel)</span>
+        </a>
+
         <!-- Labour Management Dropdown -->
         <div x-data="{ labourOpen: {{ request()->routeIs('labour-entries.*', 'advances.*', 'workers.*', 'reports.labour*') ? 'true' : 'false' }} }">
             <button @click="labourOpen = !labourOpen" 

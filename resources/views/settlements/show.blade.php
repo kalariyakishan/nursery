@@ -1,4 +1,60 @@
 <x-app-layout>
+    @push('styles')
+    <style>
+        @media print {
+            aside, header, nav, .print\:hidden, button, .flex.items-center.gap-2.text-text-secondary.mb-2, 
+            [onclick="window.print()"], a[href*="settlements"] {
+                display: none !important;
+            }
+            main {
+                margin-left: 0 !important;
+                padding: 0 !important;
+                background: white !important;
+                position: absolute !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                z-index: 100 !important;
+            }
+            .card-surface {
+                box-shadow: none !important;
+                border: 1px solid #eee !important;
+                margin-bottom: 20px !important;
+                padding: 20px !important;
+            }
+            body {
+                background: white !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .grid {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 20px !important;
+            }
+            .lg\:col-span-1, .lg\:col-span-2 {
+                width: 100% !important;
+            }
+            h2 {
+                font-size: 24px !important;
+                margin-bottom: 5px !important;
+            }
+            /* Show some borders for tables */
+            table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+            }
+            th, td {
+                border: 1px solid #eee !important;
+                padding: 8px !important;
+            }
+            .bg-background {
+                background-color: #f9f9f9 !important;
+                -webkit-print-color-adjust: exact;
+            }
+        }
+    </style>
+    @endpush
     <div class="mb-8">
         <div class="flex items-center gap-2 text-text-secondary mb-2">
             <a href="{{ route('settlements.index') }}" class="hover:text-primary transition-colors flex items-center gap-1">
