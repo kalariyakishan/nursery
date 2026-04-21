@@ -12,7 +12,7 @@
                 </div>
             </div>
             <div class="flex flex-wrap gap-4">
-                <button type="button" @click="window.location.reload()"
+                <button type="button" @click="resetForm()"
                     class="bg-white text-red-600 px-6 py-3 rounded-lg border border-red-100 font-bold text-sm flex items-center gap-2 hover:bg-red-50 transition-all cursor-pointer">
                     <span class="material-symbols-outlined text-[18px]">delete</span>
                     રીસેટ
@@ -26,7 +26,7 @@
             </div>
         </div>
 
-        <form id="invoiceForm" action="{{ route('invoices.store') }}" method="POST" autocomplete="off">
+        <form id="invoiceForm" action="{{ route('invoices.store') }}" method="POST" autocomplete="off" @submit.prevent="if(validate() && !isSubmitting) { isSubmitting = true; localStorage.removeItem(draftKey); $el.submit(); }">
             @csrf
             <div class="grid grid-cols-12 gap-8 pb-32">
                 <!-- Left Section: Customer Info + Product Selector -->
@@ -49,8 +49,10 @@
                                     @keydown.up.prevent="navigateDropdown('up')"
                                     @keydown.enter.prevent="selectHighlighted()"
                                     @focus="if(customers.length > 0) showCustomerDropdown = true"
+                                    :class="{'border-red-500': attemptedSubmit && !customerName}"
                                     class="input-field gujarati-text font-bold text-lg @error('customer_name') border-red-500 @enderror"
                                     placeholder="અમિતભાઈ શાહ..." type="text" autocomplete="disabled" />
+                                 <p x-show="attemptedSubmit && !customerName" class="text-red-500 text-[10px] font-bold mt-1">ગ્રાહકનું નામ જરૂરી છે</p>
                                 
                                 <!-- Dropdown -->
                                 <div x-show="showCustomerDropdown" 
@@ -64,7 +66,13 @@
                                             Searching...
                                         </div>
                                     </template>
-                                    <template x-if="!isSearching && customers.length === 0">
+                                    <template x-if="searchError">
+                                        <div class="p-4 text-center text-xs font-bold text-red-500 bg-red-50 border-b border-red-100">
+                                            <span class="material-symbols-outlined text-[16px] align-middle mr-1">error</span>
+                                            સર્વર કનેક્શન એરર! ડેટા લાવી શકાયો નથી.
+                                        </div>
+                                    </template>
+                                    <template x-if="!isSearching && !searchError && customers.length === 0">
                                         <div class="p-4 text-center text-xs font-bold text-red-500">
                                             No customer found. You can enter manually.
                                         </div>
@@ -151,9 +159,11 @@
                             </div>
                         @endif
                         <div class="divide-y divide-border-light/40 overflow-visible">
-                            <template x-for="(item, index) in items" :key="index">
+                            <template x-for="(item, index) in items" :key="item.uid || index">
                                 <div
                                     class="p-4 md:p-6 grid grid-cols-1 md:grid-cols-12 gap-4 items-center group relative hover:bg-background/20 transition-colors">
+                                    <input type="hidden" :name="'items['+index+'][product_id]'" :value="item.product_id">
+                                    <input type="hidden" :name="'items['+index+'][variant_id]'" :value="item.variant_id">
                                     <div class="col-span-4 space-y-2">
                                         <div class="md:hidden text-[10px] font-bold text-text-secondary uppercase mb-1">
                                             આઈટમ</div>
@@ -167,11 +177,13 @@
                                                         :selected="item.product_id == p.id"></option>
                                                 </template>
                                             </select>
-                                            <input type="text" :name="'items['+index+'][product_name]'"
+                                            <input type="text" :id="'name-'+index" :name="'items['+index+'][product_name]'"
                                                 x-model="item.product_name"
+                                                :class="{'text-red-500 placeholder-red-200': attemptedSubmit && !item.product_name}"
                                                 class="w-full bg-transparent border-none p-0 focus:ring-0 gujarati-text font-bold text-text-primary text-base placeholder-text-secondary/20"
                                                 placeholder="Product Name..."
                                                 @keydown.enter.prevent="focusNext(index, 'qty')">
+                                            <p x-show="attemptedSubmit && !item.product_name" class="text-red-500 text-[9px] font-bold mt-1">નામ જરૂરી છે</p>
                                         </div>
                                     </div>
                                     <div class="col-span-2 flex flex-col items-center">
@@ -202,8 +214,10 @@
                                             જથ્થો</div>
                                         <input type="number" :id="'qty-'+index" :name="'items['+index+'][quantity]'"
                                             x-model.number="item.quantity"
+                                            :class="{'border-red-500 bg-red-50': attemptedSubmit && (!item.quantity || item.quantity <= 0)}"
                                             class="w-full h-10 bg-white border border-border-light rounded-lg text-center text-sm font-bold text-primary focus:border-primary/50 focus:ring-0"
                                             min="1" @keydown.enter.prevent="focusNext(index, 'price')" />
+                                        <p x-show="attemptedSubmit && (!item.quantity || item.quantity <= 0)" class="text-red-500 text-[9px] font-bold mt-1 text-center">જથ્થો જરૂરી</p>
                                     </div>
                                     <div class="col-span-2 text-right">
                                         <div class="md:hidden text-[10px] font-bold text-text-secondary uppercase mb-1">
@@ -211,9 +225,11 @@
                                         <div class="relative">
                                             <input type="number" step="0.01" :id="'price-'+index"
                                                 :name="'items['+index+'][price]'" x-model.number="item.price"
+                                                :class="{'border-red-500 bg-red-50': attemptedSubmit && (!item.price && item.price !== 0)}"
                                                 class="w-full h-10 bg-white border border-border-light rounded-lg text-right text-sm font-bold focus:border-primary/50 focus:ring-0 px-3"
                                                 placeholder="0.00"
                                                 @keydown.enter.prevent="index === items.length - 1 ? addItem() : focusNext(index + 1, 'name')" />
+                                            <p x-show="attemptedSubmit && (!item.price && item.price !== 0)" class="text-red-500 text-[9px] font-bold mt-1 text-right">ભાવ જરૂરી</p>
                                         </div>
                                     </div>
                                     <div class="col-span-2 text-right">
@@ -248,12 +264,12 @@
 
                     <!-- Summary Grid -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="card-surface p-6 opacity-60 pointer-events-none">
+                        <div class="card-surface p-6 border-border-light/30">
                             <label
                                 class="text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-3 block opacity-60">મોટી
                                 નોંધ (Extra Notes)</label>
-                            <textarea name="notes" readonly
-                                class="block w-full rounded-lg border-border-light shadow-sm focus:border-primary focus:ring-1 focus:ring-primary/20 bg-background/30 p-4 text-xs font-bold gujarati-text placeholder-text-secondary/20 resize-none"
+                            <textarea name="notes" x-model="notes"
+                                class="block w-full rounded-lg border-border-light shadow-sm focus:border-primary focus:ring-1 focus:ring-primary/20 bg-white p-4 text-xs font-bold gujarati-text placeholder-text-secondary/20 resize-none"
                                 placeholder="કોઈ ખાસ સૂચના લખો..." rows="4"></textarea>
                         </div>
                         <div class="card-surface p-6 space-y-3 bg-white border-primary/10">
@@ -262,10 +278,10 @@
                                 <span class="font-bold text-sm tracking-tight"
                                     x-text="'₹ ' + subtotal.toLocaleString('en-IN', {minimumFractionDigits: 2})"></span>
                             </div>
-                            <div class="flex justify-between items-center px-4 py-3 bg-red-50/50 rounded-lg opacity-60 pointer-events-none">
+                            <div class="flex justify-between items-center px-4 py-3 bg-red-50/50 rounded-lg border border-red-100/50">
                                 <span class="text-red-700 text-xs font-bold uppercase">Discount</span>
                                 <div class="flex items-center gap-2">
-                                    <input type="number" x-model.number="discount" readonly
+                                    <input type="number" x-model.number="discount"
                                         class="w-20 h-8 border-none bg-white rounded shadow-sm text-center text-xs font-bold text-red-600 focus:ring-1 focus:ring-red-200">
                                     <span class="font-bold text-xs text-red-700"
                                         x-text="'- ₹' + discount.toLocaleString('en-IN', {minimumFractionDigits: 2})"></span>
@@ -314,32 +330,114 @@
             <input type="hidden" name="gst" :value="gstAmount">
             <input type="hidden" name="total" :value="grandTotal">
         </form>
+
+    <!-- Print Preview Modal -->
+    <div x-show="showPreviewModal" style="display: none;" class="fixed inset-0 z-[100] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div x-show="showPreviewModal" x-transition.opacity class="fixed inset-0 bg-gray-900/75 backdrop-blur-sm transition-opacity" @click="showPreviewModal = false"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div x-show="showPreviewModal" x-transition class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-8 sm:pb-6">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
+                            <h3 class="text-xl leading-6 font-black text-gray-900 mb-6 flex items-center justify-between border-b pb-4" id="modal-title">
+                                <span class="flex items-center gap-2"><span class="material-symbols-outlined text-primary">visibility</span> ઇન્વોઇસ પ્રિવ્યૂ</span>
+                                <button type="button" @click="showPreviewModal = false" class="text-gray-400 hover:text-gray-500 focus:outline-none"><span class="material-symbols-outlined">close</span></button>
+                            </h3>
+                            <div class="mt-4 border border-border-light rounded-xl p-6 bg-background/30 shadow-subtle">
+                                <div class="grid grid-cols-2 gap-4 mb-6 pb-6 border-b border-dashed border-gray-200">
+                                    <div class="text-left">
+                                        <p class="text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-1">ગ્રાહક</p>
+                                        <p class="font-bold text-lg text-primary gujarati-text" x-text="customerName || 'None'"></p>
+                                        <p class="text-sm font-bold text-text-secondary mt-1" x-show="customerPhone" x-text="'+91 ' + customerPhone"></p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-1">તારીખ</p>
+                                        <p class="font-black text-lg">{{ date('d M, Y') }}</p>
+                                    </div>
+                                </div>
+                                <div class="overflow-hidden border border-border-light rounded-xl">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th class="px-4 py-3 text-left text-[10px] font-black text-text-secondary uppercase tracking-wider">આઈટમ (Product)</th>
+                                                <th class="px-4 py-3 text-center text-[10px] font-black text-text-secondary uppercase tracking-wider">જથ્થો (Qty)</th>
+                                                <th class="px-4 py-3 text-right text-[10px] font-black text-text-secondary uppercase tracking-wider">ભાવ (Price)</th>
+                                                <th class="px-4 py-3 text-right text-[10px] font-black text-text-secondary uppercase tracking-wider">કુલ (Total)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-100">
+                                            <template x-for="(item, index) in items" :key="index">
+                                                <template x-if="item.product_name || item.quantity > 0">
+                                                    <tr>
+                                                        <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-gray-900 gujarati-text" x-text="item.product_name || '-'"></td>
+                                                        <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-gray-600 text-center" x-text="item.quantity"></td>
+                                                        <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-gray-600 text-right" x-text="'₹ ' + Number(item.price).toLocaleString('en-IN', {minimumFractionDigits: 2})"></td>
+                                                        <td class="px-4 py-3 whitespace-nowrap text-sm font-black text-primary text-right" x-text="'₹ ' + (item.quantity * item.price).toLocaleString('en-IN', {minimumFractionDigits: 2})"></td>
+                                                    </tr>
+                                                </template>
+                                            </template>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="mt-6 flex justify-end">
+                                    <div class="w-72 space-y-3 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                                        <div class="flex justify-between text-sm"><span class="font-bold text-gray-500 uppercase text-[10px] tracking-widest">Subtotal</span> <span class="font-black text-gray-800" x-text="'₹ ' + subtotal.toLocaleString('en-IN', {minimumFractionDigits: 2})"></span></div>
+                                        <div class="flex justify-between text-sm text-red-600" x-show="discount > 0"><span class="font-bold uppercase text-[10px] tracking-widest">Discount</span> <span class="font-black" x-text="'- ₹ ' + discount.toLocaleString('en-IN', {minimumFractionDigits: 2})"></span></div>
+                                        <template x-if="gstSettings.enabled && gstAmount > 0">
+                                            <div class="flex justify-between text-sm text-emerald-600"><span class="font-bold uppercase text-[10px] tracking-widest">GST</span> <span class="font-black" x-text="'+ ₹ ' + gstAmount.toLocaleString('en-IN', {minimumFractionDigits: 2})"></span></div>
+                                        </template>
+                                        <div class="flex justify-between text-lg font-black pt-3 border-t border-dashed border-gray-200 text-primary"><span>Total</span> <span x-text="'₹ ' + grandTotal.toLocaleString('en-IN', {minimumFractionDigits: 2})"></span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-4 sm:px-8 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 border-t border-gray-200">
+                    <button type="button" @click="showPreviewModal = false" class="w-full inline-flex justify-center rounded-lg border-2 border-gray-200 px-6 py-3 bg-white text-sm font-bold text-gray-700 hover:bg-gray-50 hover:border-gray-300 focus:outline-none transition-all sm:w-auto uppercase tracking-widest hidden sm:block">
+                        સુધારો (EDIT)
+                    </button>
+                    <button type="button" @click="submitFormFromPreview()" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-lg shadow-primary/20 px-8 py-3 bg-primary text-sm font-bold text-white hover:bg-primary-dark focus:outline-none transition-all sm:w-auto uppercase tracking-widest flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-[18px]">task_alt</span> બનાવો (SUBMIT)
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    @push('footer')
     <!-- Sticky Footer -->
     <footer
         class="fixed bottom-0 md:left-64 left-0 right-0 bg-white border-t border-border-light px-4 md:px-8 py-4 md:py-5 flex flex-col md:flex-row justify-between items-center z-50 shadow-[0_-10px_30px_rgba(0,0,0,0.03)] transition-all duration-300">
         <div class="flex items-center justify-between w-full md:w-auto gap-8 mb-4 md:mb-0">
-            <div class="flex flex-col">
+            <div class="flex flex-col min-w-[120px]">
                 <span class="text-[10px] uppercase font-bold text-text-secondary opacity-60 leading-none mb-1">Net
                     Payable</span>
-                <span class="text-2xl font-black text-primary tracking-tighter leading-tight"
-                    x-text="'₹ ' + grandTotal.toLocaleString('en-IN', {minimumFractionDigits: 2})"></span>
+                <span class="text-2xl font-black text-primary tracking-tighter leading-tight whitespace-nowrap"
+                    x-text="'₹ ' + Number(grandTotal).toLocaleString('en-IN', {minimumFractionDigits: 2})"></span>
             </div>
             <div class="h-8 w-[1px] bg-border-light hidden md:block"></div>
             <p class="text-[10px] font-bold text-text-secondary gujarati-text opacity-50 hidden lg:block">સરનામું અને
                 સંપર્ક વિગતો આપોઆપ <br>બિલીંગ પર છપાશે.</p>
         </div>
         <div class="flex gap-2 md:gap-4 w-full md:w-auto">
+            <button type="button" @click="if(validate()) showPreviewModal = true"
+                class="secondary-btn flex-1 md:flex-none text-[10px] md:text-xs uppercase tracking-widest px-4 md:px-8 cursor-pointer py-3 border border-primary/20 hover:border-primary text-primary transition-all flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">visibility</span>
+                <span class="hidden sm:inline">પ્રિવ્યૂ </span>(VIEW)
+            </button>
             <button type="submit" form="invoiceForm"
-                class="primary-btn flex-1 md:flex-none text-[10px] md:text-xs uppercase tracking-widest px-4 md:px-8 shadow-lg shadow-primary/20 py-3">
-                <span class="material-symbols-outlined text-[18px]">task_alt</span>
-                <span class="hidden sm:inline">બનાવો </span>(GEN)
+                :disabled="isSubmitting"
+                :class="{'opacity-75 cursor-wait': isSubmitting}"
+                class="primary-btn flex-1 md:flex-none text-[10px] md:text-xs uppercase tracking-widest px-6 md:px-10 shadow-[0_10px_20px_rgba(var(--primary),0.3)] py-3 leading-none flex items-center justify-center gap-2 bg-primary text-white font-bold rounded-lg hover:bg-primary-dark hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 relative overflow-hidden">
+                <span x-show="!isSubmitting" class="material-symbols-outlined text-[18px] transition-transform group-hover:scale-110">task_alt</span>
+                <div x-show="isSubmitting" style="display: none;" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                
+                <span class="whitespace-nowrap" x-text="isSubmitting ? 'બની રહ્યું છે...' : 'બનાવો (SUBMIT)'"></span>
             </button>
         </div>
     </footer>
-    @endpush
+    </div>
 
     <script>
         function invoiceSystem() {
@@ -356,19 +454,35 @@
                 search: '',
                 
                 // Customer Autocomplete State
-                customerName: {!! json_encode(old('customer_name')) !!},
-                customerPhone: {!! json_encode(old('phone')) !!},
-                customerAddress: {!! json_encode(old('address')) !!},
+                draftKey: 'invoice_draft_{{ auth()->id() ?? "guest" }}',
+                searchController: null,
+                draftTimeout: null,
+                customerName: @json(old('customer_name', '')),
+                customerPhone: @json(old('phone', '')),
+                customerAddress: @json(old('address', '')),
                 customers: [],
                 showCustomerDropdown: false,
                 isSearching: false,
+                searchError: false,
                 selectedIndex: -1,
+                attemptedSubmit: false,
+                isSubmitting: false,
+                showPreviewModal: false,
+                notes: @json(old('notes', '')),
+
+                generateUid() {
+                    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+                },
 
                 init() {
-                    const oldItems = @json(old('items'));
+                    const rawOldItems = @json(old('items'));
+                    const oldItems = rawOldItems ? Object.values(rawOldItems) : null;
+                    
                     if (oldItems && oldItems.length > 0) {
                         this.items = oldItems.map(item => ({
-                            product_id: '',
+                            uid: this.generateUid(),
+                            product_id: item.product_id || '',
+                            variant_id: item.variant_id || '',
                             product_name: item.product_name || '',
                             height: item.height || '',
                             bag_size: item.bag_size || '',
@@ -376,29 +490,81 @@
                             price: item.price || 0,
                             availableVariants: []
                         }));
+                        this.subtotal = parseFloat({{ old('subtotal', 0) }});
+                        this.discount = parseFloat({{ old('discount', 0) }});
+                        this.gstAmount = parseFloat({{ old('gst', 0) }});
+                        this.grandTotal = parseFloat({{ old('total', 0) }});
                     } else {
-                        this.addItem();
+                        const draft = localStorage.getItem(this.draftKey);
+                        if (draft) {
+                            try {
+                                const parsedDraft = JSON.parse(draft);
+                                this.items = parsedDraft.items || [];
+                                this.items.forEach(item => { if(!item.uid) item.uid = this.generateUid(); });
+                                this.customerName = parsedDraft.customerName || '';
+                                this.customerPhone = parsedDraft.customerPhone || '';
+                                this.customerAddress = parsedDraft.customerAddress || '';
+                                this.discount = parsedDraft.discount || 0;
+                                this.notes = parsedDraft.notes || '';
+                                if (this.items.length === 0) this.addItem();
+                                setTimeout(() => this.calculate(), 100);
+                            } catch (e) {
+                                this.addItem();
+                            }
+                        } else {
+                            this.addItem();
+                        }
+                        
+                        this.subtotal = parseFloat({{ old('subtotal', 0) }});
+                        if (!draft) this.discount = parseFloat({{ old('discount', 0) }});
+                        this.gstAmount = parseFloat({{ old('gst', 0) }});
+                        this.grandTotal = parseFloat({{ old('total', 0) }});
                     }
-                    
-                    this.subtotal = {{ old('subtotal', 0) }};
-                    this.discount = {{ old('discount', 0) }};
-                    this.gstAmount = {{ old('gst', 0) }};
-                    this.grandTotal = {{ old('total', 0) }};
 
-                    this.$watch('items', () => this.calculate(), { deep: true });
-                    this.$watch('discount', () => this.calculate());
-                    this.$watch('gstRate', () => this.calculate());
+                    this.$watch('items', () => { this.calculate(); this.saveDraft(); }, { deep: true });
+                    this.$watch('discount', () => { this.calculate(); this.saveDraft(); });
+                    this.$watch('customerName', () => this.saveDraft());
+                    this.$watch('customerPhone', () => this.saveDraft());
+                    this.$watch('customerAddress', () => this.saveDraft());
+                    this.$watch('notes', () => this.saveDraft());
+                },
+                
+                saveDraft() {
+                    if (this.isSubmitting) return;
+                    clearTimeout(this.draftTimeout);
+                    this.draftTimeout = setTimeout(() => {
+                        const draft = {
+                            items: this.items,
+                            customerName: this.customerName,
+                            customerPhone: this.customerPhone,
+                            customerAddress: this.customerAddress,
+                            discount: this.discount,
+                            notes: this.notes
+                        };
+                        localStorage.setItem(this.draftKey, JSON.stringify(draft));
+                    }, 500);
                 },
 
                 addItem() {
+                    const maxLimit = this.gstSettings.enabled ? 20 : 25;
+                    if (this.items.length >= maxLimit) {
+                        alert(`તમે બિલમાં ${maxLimit} થી વધુ આઈટમ ઉમેરી શકતા નથી.`);
+                        return;
+                    }
+
                     this.items.push({
+                        uid: this.generateUid(),
                         product_id: '',
+                        variant_id: '',
                         product_name: '',
                         height: '',
                         bag_size: '',
                         quantity: 1,
                         price: 0,
                         availableVariants: []
+                    });
+                    this.$nextTick(() => {
+                        this.focusNext(this.items.length - 1, 'name');
                     });
                 },
 
@@ -432,15 +598,21 @@
                 },
 
                 calculate() {
-                    this.subtotal = this.items.reduce((sum, item) => sum + (item.quantity * (item.price || 0)), 0);
+                    // Prevent discount from being negative
+                    if (this.discount < 0) this.discount = 0;
+
+                    this.subtotal = this.items.reduce((sum, item) => sum + (Math.max(0, parseFloat(item.quantity) || 0) * (parseFloat(item.price) || 0)), 0);
+                    
+                    if (this.discount > this.subtotal) this.discount = this.subtotal;
+
                     const amountToTax = this.subtotal - this.discount;
                     
                     if (this.gstSettings.enabled && this.gstSettings.percentage > 0) {
                         if (this.gstSettings.type === 'inclusive') {
-                            this.gstAmount = amountToTax - (amountToTax / (1 + (this.gstSettings.percentage / 100)));
+                            const basePrice = amountToTax / (1 + (this.gstSettings.percentage / 100));
+                            this.gstAmount = amountToTax - basePrice;
                             this.grandTotal = amountToTax;
                             
-                            const basePrice = amountToTax / (1 + (this.gstSettings.percentage / 100));
                             this.cgstAmount = basePrice * (this.gstSettings.cgst_percentage / 100);
                             this.sgstAmount = basePrice * (this.gstSettings.sgst_percentage / 100);
                         } else {
@@ -459,6 +631,12 @@
 
                     if (this.gstAmount < 0) this.gstAmount = 0;
                     if (this.grandTotal < 0) this.grandTotal = 0;
+
+                    this.gstAmount = parseFloat(this.gstAmount.toFixed(2));
+                    this.cgstAmount = parseFloat(this.cgstAmount.toFixed(2));
+                    this.sgstAmount = parseFloat(this.sgstAmount.toFixed(2));
+                    this.grandTotal = parseFloat(this.grandTotal.toFixed(2));
+                    this.subtotal = parseFloat(this.subtotal.toFixed(2));
                 },
 
                 focusNext(index, field) {
@@ -466,24 +644,84 @@
                     const currentItem = this.items[index];
                     if (field === 'qty') document.getElementById('qty-' + index)?.focus();
                     if (field === 'price') document.getElementById('price-' + index)?.focus();
+                    if (field === 'name') document.getElementById('name-' + index)?.focus();
+                },
+
+                resetForm() {
+                    localStorage.removeItem(this.draftKey);
+                    this.notes = '';
+                    this.customerName = '';
+                    this.customerPhone = '';
+                    this.customerAddress = '';
+                    this.subtotal = 0;
+                    this.discount = 0;
+                    this.gstAmount = 0;
+                    this.cgstAmount = 0;
+                    this.sgstAmount = 0;
+                    this.grandTotal = 0;
+                    this.items = [];
+                    this.addItem();
+                    this.attemptedSubmit = false;
+                    this.isSubmitting = false;
+                    this.searchError = false;
+                },
+
+                submitFormFromPreview() {
+                    if (this.isSubmitting) return;
+                    this.isSubmitting = true;
+                    this.showPreviewModal = false;
+                    localStorage.removeItem(this.draftKey);
+                    document.getElementById('invoiceForm').submit();
+                },
+
+                validate() {
+                    this.attemptedSubmit = true;
+                    let isValid = true;
+
+                    if (!this.customerName || this.customerName.trim() === '') {
+                        isValid = false;
+                    }
+
+                    this.items.forEach(item => {
+                        if (!item.product_name || item.product_name.trim() === '') isValid = false;
+                        if (!item.quantity || item.quantity <= 0) isValid = false;
+                        if (item.price === '' || item.price === null || item.price === undefined) isValid = false;
+                    });
+
+                    if (!isValid) {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+
+                    return isValid;
                 },
 
                 async searchCustomers() {
                     if (this.customerName.length < 2) {
                         this.customers = [];
                         this.showCustomerDropdown = false;
+                        this.searchError = false;
                         return;
                     }
 
                     this.isSearching = true;
                     this.showCustomerDropdown = true;
+                    this.searchError = false;
                     this.selectedIndex = -1;
 
+                    if (this.searchController) this.searchController.abort();
+                    this.searchController = new AbortController();
+
                     try {
-                        const response = await fetch(`/api/customers/search?query=${encodeURIComponent(this.customerName)}`);
+                        const response = await fetch(`/api/customers/search?query=${encodeURIComponent(this.customerName)}`, {
+                            signal: this.searchController.signal
+                        });
+                        if (!response.ok) throw new Error('API Error');
                         this.customers = await response.json();
                     } catch (error) {
+                        if (error.name === 'AbortError') return;
                         console.error('Error fetching customers:', error);
+                        this.searchError = true;
+                        this.customers = [];
                     } finally {
                         this.isSearching = false;
                     }

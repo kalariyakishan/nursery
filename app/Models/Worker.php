@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Worker extends Model
 {
+    use SoftDeletes;
     protected $fillable = ['name', 'phone', 'default_wage'];
 
     public function attendance()
@@ -16,5 +18,10 @@ class Worker extends Model
     public function advances()
     {
         return $this->hasMany(Advance::class);
+    }
+
+    public function settlements()
+    {
+        return $this->hasMany(Settlement::class);
     }
 }

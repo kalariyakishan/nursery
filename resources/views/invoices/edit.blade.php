@@ -22,7 +22,7 @@
             </div>
         </div>
 
-        <form id="invoiceForm" action="{{ route('invoices.update', $invoice) }}" method="POST" autocomplete="off">
+        <form id="invoiceForm" action="{{ route('invoices.update', $invoice) }}" method="POST" autocomplete="off" @submit.prevent="if(validate() && !isSubmitting) { isSubmitting = true; $el.submit(); }">
             @csrf
             @method('PUT')
             <div class="grid grid-cols-12 gap-8 pb-32">
@@ -43,8 +43,10 @@
                                        @keydown.up.prevent="navigateDropdown('up')"
                                        @keydown.enter.prevent="selectHighlighted()"
                                        @focus="if(customers.length > 0) showCustomerDropdown = true"
+                                       :class="{'border-red-500': attemptedSubmit && !customerName}"
                                        class="input-field gujarati-text font-bold text-lg @error('customer_name') border-red-500 @enderror" 
                                        placeholder="અમિતભાઈ શાહ..." type="text" autocomplete="disabled" />
+                                 <p x-show="attemptedSubmit && !customerName" class="text-red-500 text-[10px] font-bold mt-1">ગ્રાહકનું નામ જરૂરી છે</p>
                                 
                                 <!-- Dropdown -->
                                 <div x-show="showCustomerDropdown" 
@@ -58,7 +60,13 @@
                                             Searching...
                                         </div>
                                     </template>
-                                    <template x-if="!isSearching && customers.length === 0">
+                                    <template x-if="searchError">
+                                        <div class="p-4 text-center text-xs font-bold text-red-500 bg-red-50 border-b border-red-100">
+                                            <span class="material-symbols-outlined text-[16px] align-middle mr-1">error</span>
+                                            સર્વર કનેક્શન એરર! ડેટા લાવી શકાયો નથી.
+                                        </div>
+                                    </template>
+                                    <template x-if="!isSearching && !searchError && customers.length === 0">
                                         <div class="p-4 text-center text-xs font-bold text-red-500">
                                             No customer found. You can enter manually.
                                         </div>
@@ -143,10 +151,12 @@
                                                     <option :value="p.id" x-text="p.name" :selected="item.product_id == p.id"></option>
                                                 </template>
                                             </select>
-                                            <input type="text" :name="'items['+index+'][product_name]'" x-model="item.product_name" 
+                                            <input type="text" :id="'name-'+index" :name="'items['+index+'][product_name]'" x-model="item.product_name" 
+                                                   :class="{'text-red-500 placeholder-red-200': attemptedSubmit && !item.product_name}"
                                                    class="w-full bg-transparent border-none p-0 focus:ring-0 gujarati-text font-bold text-text-primary text-base placeholder-text-secondary/20" 
                                                    placeholder="Product Name..."
                                                    @keydown.enter.prevent="focusNext(index, 'qty')">
+                                            <p x-show="attemptedSubmit && !item.product_name" class="text-red-500 text-[9px] font-bold mt-1">નામ જરૂરી છે</p>
                                         </div>
                                     </div>
                                     <div class="col-span-2 flex flex-col items-center">
@@ -172,17 +182,21 @@
                                     <div class="col-span-2 text-center">
                                         <div class="md:hidden text-[10px] font-bold text-text-secondary uppercase mb-1">જથ્થો</div>
                                         <input type="number" :id="'qty-'+index" :name="'items['+index+'][quantity]'" x-model.number="item.quantity" 
+                                               :class="{'border-red-500 bg-red-50': attemptedSubmit && (!item.quantity || item.quantity <= 0)}"
                                                class="w-full h-10 bg-white border border-border-light rounded-lg text-center text-sm font-bold text-primary focus:border-primary/50 focus:ring-0" 
                                                min="1"
                                                @keydown.enter.prevent="focusNext(index, 'price')"/>
+                                        <p x-show="attemptedSubmit && (!item.quantity || item.quantity <= 0)" class="text-red-500 text-[9px] font-bold mt-1 text-center">જથ્થો જરૂરી</p>
                                     </div>
                                     <div class="col-span-2 text-right">
                                         <div class="md:hidden text-[10px] font-bold text-text-secondary uppercase mb-1">દર</div>
                                         <div class="relative">
                                             <input type="number" step="0.01" :id="'price-'+index" :name="'items['+index+'][price]'" x-model.number="item.price" 
+                                                   :class="{'border-red-500 bg-red-50': attemptedSubmit && (!item.price && item.price !== 0)}"
                                                    class="w-full h-10 bg-white border border-border-light rounded-lg text-right text-sm font-bold focus:border-primary/50 focus:ring-0 px-3" 
                                                    placeholder="0.00"
                                                    @keydown.enter.prevent="index === items.length - 1 ? addItem() : focusNext(index + 1, 'name')"/>
+                                            <p x-show="attemptedSubmit && (!item.price && item.price !== 0)" class="text-red-500 text-[9px] font-bold mt-1 text-right">ભાવ જરૂરી</p>
                                         </div>
                                     </div>
                                     <div class="col-span-2 text-right">
@@ -211,9 +225,9 @@
 
                     <!-- Summary Grid -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="card-surface p-6 opacity-60 pointer-events-none">
+                        <div class="card-surface p-6 border-border-light/30">
                             <label class="text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-3 block opacity-60">મોટી નોંધ (Extra Notes)</label>
-                            <textarea name="notes" readonly class="block w-full rounded-lg border-border-light shadow-sm focus:border-primary focus:ring-1 focus:ring-primary/20 bg-background/30 p-4 text-xs font-bold gujarati-text placeholder-text-secondary/20 resize-none" 
+                            <textarea name="notes" class="block w-full rounded-lg border-border-light shadow-sm focus:border-primary focus:ring-1 focus:ring-primary/20 bg-white p-4 text-xs font-bold gujarati-text placeholder-text-secondary/20 resize-none" 
                                       placeholder="કોઈ ખાસ સૂચના લખો..." rows="4">{{ $invoice->notes }}</textarea>
                         </div>
                         <div class="card-surface p-6 space-y-3 bg-white border-primary/10">
@@ -221,10 +235,10 @@
                                 <span class="text-text-secondary text-xs uppercase font-bold opacity-60">Subtotal</span>
                                 <span class="font-bold text-sm tracking-tight" x-text="'₹ ' + subtotal.toLocaleString('en-IN', {minimumFractionDigits: 2})"></span>
                             </div>
-                            <div class="flex justify-between items-center px-4 py-3 bg-red-50/50 rounded-lg opacity-60 pointer-events-none">
+                            <div class="flex justify-between items-center px-4 py-3 bg-red-50/50 rounded-lg border border-red-100/50">
                                 <span class="text-red-700 text-xs font-bold uppercase">Discount</span>
                                 <div class="flex items-center gap-2">
-                                    <input type="number" x-model.number="discount" readonly class="w-20 h-8 border-none bg-white rounded shadow-sm text-center text-xs font-bold text-red-600 focus:ring-1 focus:ring-red-200">
+                                    <input type="number" x-model.number="discount" class="w-20 h-8 border-none bg-white rounded shadow-sm text-center text-xs font-bold text-red-600 focus:ring-1 focus:ring-red-200">
                                     <span class="font-bold text-xs text-red-700" x-text="'- ₹' + discount.toLocaleString('en-IN', {minimumFractionDigits: 2})"></span>
                                 </div>
                             </div>
@@ -285,9 +299,15 @@
                 <span class="material-symbols-outlined text-[18px]">print</span>
                 <span class="hidden sm:inline">પ્રિન્ટ </span>(PRINT)
             </button>
-            <button type="submit" form="invoiceForm" class="primary-btn flex-1 md:flex-none text-[10px] md:text-xs uppercase tracking-widest px-4 md:px-8 shadow-lg shadow-primary/20 py-3">
-                <span class="material-symbols-outlined text-[18px]">task_alt</span>
-                <span class="hidden sm:inline">સુધારો </span>(UPDATE)
+            <button type="submit" form="invoiceForm" :disabled="isSubmitting" :class="{'opacity-75 cursor-wait': isSubmitting}" class="primary-btn flex-1 md:flex-none text-[10px] md:text-xs uppercase tracking-widest px-4 md:px-8 shadow-lg shadow-primary/20 py-3 flex items-center justify-center gap-2">
+                <template x-if="!isSubmitting">
+                    <span class="material-symbols-outlined text-[18px]">task_alt</span>
+                </template>
+                <template x-if="isSubmitting">
+                    <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                </template>
+                <span class="hidden sm:inline" x-text="isSubmitting ? 'સુધરી રહ્યું છે...' : 'સુધારો '"></span>
+                <span x-show="!isSubmitting">(UPDATE)</span>
             </button>
         </div>
     </footer>
@@ -313,7 +333,10 @@
                 customers: [],
                 showCustomerDropdown: false,
                 isSearching: false,
+                searchError: false,
                 selectedIndex: -1,
+                attemptedSubmit: false,
+                isSubmitting: false,
 
                 init() {
                     let rawItems = @json(old('items'));
@@ -348,7 +371,6 @@
                     
                     this.$watch('items', () => this.calculate(), { deep: true });
                     this.$watch('discount', () => this.calculate());
-                    this.$watch('gstRate', () => this.calculate());
                 },
 
                 addItem() {
@@ -361,6 +383,9 @@
                         price: 0,
                         availableVariants: []
                     });
+                    setTimeout(() => {
+                        this.focusNext(this.items.length - 1, 'name');
+                    }, 50);
                 },
 
                 removeItem(index) {
@@ -394,6 +419,11 @@
 
                 calculate() {
                     this.subtotal = this.items.reduce((sum, item) => sum + (item.quantity * (item.price || 0)), 0);
+                    
+                    // Prevent discount from being negative or exceeding subtotal
+                    if (this.discount < 0) this.discount = 0;
+                    if (this.discount > this.subtotal) this.discount = this.subtotal;
+
                     const amountToTax = this.subtotal - this.discount;
                     
                     if (this.gstSettings.enabled && this.gstSettings.percentage > 0) {
@@ -426,24 +456,51 @@
                     const currentItem = this.items[index];
                     if (field === 'qty') document.getElementById('qty-' + index)?.focus();
                     if (field === 'price') document.getElementById('price-' + index)?.focus();
+                    if (field === 'name') document.getElementById('name-' + index)?.focus();
+                },
+
+                validate() {
+                    this.attemptedSubmit = true;
+                    let isValid = true;
+
+                    if (!this.customerName || this.customerName.trim() === '') {
+                        isValid = false;
+                    }
+
+                    this.items.forEach(item => {
+                        if (!item.product_name || item.product_name.trim() === '') isValid = false;
+                        if (!item.quantity || item.quantity <= 0) isValid = false;
+                        if (item.price === '' || item.price === null || item.price === undefined) isValid = false;
+                    });
+
+                    if (!isValid) {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+
+                    return isValid;
                 },
 
                 async searchCustomers() {
                     if (this.customerName.length < 2) {
                         this.customers = [];
                         this.showCustomerDropdown = false;
+                        this.searchError = false;
                         return;
                     }
 
                     this.isSearching = true;
                     this.showCustomerDropdown = true;
+                    this.searchError = false;
                     this.selectedIndex = -1;
 
                     try {
                         const response = await fetch(`/api/customers/search?query=${encodeURIComponent(this.customerName)}`);
+                        if (!response.ok) throw new Error('API Error');
                         this.customers = await response.json();
                     } catch (error) {
                         console.error('Error fetching customers:', error);
+                        this.searchError = true;
+                        this.customers = [];
                     } finally {
                         this.isSearching = false;
                     }

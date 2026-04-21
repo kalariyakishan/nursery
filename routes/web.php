@@ -64,9 +64,9 @@ Route::middleware('auth')->group(function () {
     Route::put('labour-entries/api/update/{id}', [App\Http\Controllers\LabourEntryApiController::class, 'update'])->name('api.labour-entries.update');
     Route::delete('labour-entries/api/destroy/{id}', [App\Http\Controllers\LabourEntryApiController::class, 'destroy'])->name('api.labour-entries.destroy');
     Route::resource('advances', App\Http\Controllers\AdvanceController::class);
+    Route::resource('settlements', App\Http\Controllers\SettlementController::class);
 
     Route::get('reports/labour', [App\Http\Controllers\LabourReportController::class, 'index'])->name('reports.labour');
-    Route::get('reports/labour/ledger', [App\Http\Controllers\LabourReportController::class, 'ledger'])->name('reports.labour.ledger');
     Route::get('reports/labour/export/pdf', [App\Http\Controllers\LabourReportController::class, 'exportPdf'])->name('reports.labour.pdf');
     Route::get('reports/labour/export/excel', [App\Http\Controllers\LabourReportController::class, 'exportExcel'])->name('reports.labour.excel');
 

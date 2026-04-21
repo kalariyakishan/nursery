@@ -10,18 +10,6 @@ use Illuminate\Support\Facades\DB;
 
 class LabourEntryApiController extends Controller
 {
-    private function recalculateWrapper($date)
-    {
-        if (!$date) return;
-        $entry = LabourEntry::where('date', $date)->first();
-        if ($entry) {
-            $entry->update([
-                'total_workers' => $entry->details()->count(),
-                'total_amount' => $entry->details()->sum('wage_amount')
-            ]);
-        }
-    }
-
     public function store(Request $request)
     {
         $request->validate([
@@ -63,8 +51,6 @@ class LabourEntryApiController extends Controller
                 'wage_amount' => $request->wage_amount,
             ]);
 
-            $this->recalculateWrapper($request->date);
-
             DB::commit();
 
             return response()->json([
@@ -94,8 +80,6 @@ class LabourEntryApiController extends Controller
                 'wage_amount' => $request->wage_amount,
             ]);
 
-            $this->recalculateWrapper($detail->labourEntry->date);
-
             DB::commit();
 
             return response()->json(['success' => true]);
@@ -111,10 +95,7 @@ class LabourEntryApiController extends Controller
             DB::beginTransaction();
 
             $detail = LabourEntryDetail::findOrFail($id);
-            $date = $detail->labourEntry->date;
             $detail->delete();
-
-            $this->recalculateWrapper($date);
 
             DB::commit();
 

@@ -24,10 +24,17 @@
 </head>
 <body>
     <div class="header">
-        <h1>Nursery</h1>
-        <p>LABOUR WAGES REPORT - {{ \Carbon\Carbon::parse($month.'-01')->format('F Y') }}</p>
+        <h1>New Vrundavan Nursery</h1>
+        <p>LABOUR WAGES REPORT</p>
+        <p style="font-size: 14px; margin-top: 5px; color: #333;">
+            @if($month)
+                {{ \Carbon\Carbon::parse($month.'-01')->format('F Y') }}
+            @else
+                {{ \Carbon\Carbon::parse($startDate)->format('d/m/Y') }} to {{ \Carbon\Carbon::parse($endDate)->format('d/m/Y') }}
+            @endif
+        </p>
         @if($worker)
-            <div style="margin-top: 10px; font-size: 16px; font-weight: bold;">Worker: {{ $worker->name }}</div>
+            <div style="margin-top: 10px; font-size: 16px; font-weight: bold; color: #4f46e5;">Worker: {{ $worker->name }}</div>
         @endif
     </div>
 

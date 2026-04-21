@@ -18,10 +18,18 @@
 
     <!-- Filters -->
     <div class="card-surface p-6 shadow-premium mb-8">
-        <form action="{{ route('reports.labour') }}" method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+        <form action="{{ route('reports.labour') }}" method="GET" class="grid grid-cols-1 md:grid-cols-5 gap-6 items-end">
             <div>
-                <label class="text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-1.5 block">મહિનો પસંદ કરો</label>
+                <label class="text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-1.5 block">મહિનો (વૈકલ્પિક)</label>
                 <input type="month" name="month" value="{{ $month }}" class="input-field font-bold">
+            </div>
+            <div>
+                <label class="text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-1.5 block">થી (From Date)</label>
+                <input type="date" name="start_date" value="{{ $startDate }}" class="input-field font-bold text-xs">
+            </div>
+            <div>
+                <label class="text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-1.5 block">સુધી (To Date)</label>
+                <input type="date" name="end_date" value="{{ $endDate }}" class="input-field font-bold text-xs">
             </div>
             <div>
                 <label class="text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-1.5 block">મજૂર (વૈકલ્પિક)</label>
@@ -63,7 +71,7 @@
     <div class="mb-8">
         <h3 class="text-lg font-bold text-text-primary gujarati-text mb-4 flex items-center gap-2">
             <span class="material-symbols-outlined text-primary">analytics</span>
-            મહિનાવાર સેટલમેન્ટ સમરી (Monthly Settlement)
+            સેટલમેન્ટ સમરી (Settlement Summary)
         </h3>
         <div class="card-surface shadow-premium overflow-hidden">
             <div class="overflow-x-auto">
@@ -79,11 +87,11 @@
                     </thead>
                     <tbody class="divide-y divide-border-light/50">
                         @foreach($settlements as $s)
-                            <tr class="hover:bg-background/20 transition-colors">
+                            <tr class="hover:bg-background/20 transition-colors {{ $workerId == $s->worker->id ? 'bg-primary/5' : '' }}">
                                 <td class="px-6 py-4 gujarati-text font-bold text-text-primary">
                                     <div class="flex items-center gap-2">
                                         {{ $s->worker->name }}
-                                        <a href="{{ route('reports.labour.ledger', ['worker_id' => $s->worker->id]) }}" title="લેજર જુઓ" class="text-primary hover:scale-110 transition-transform">
+                                        <a href="{{ route('reports.labour', ['worker_id' => $s->worker->id, 'start_date' => $startDate, 'end_date' => $endDate]) }}" title="લેજર જુઓ" class="text-primary hover:scale-110 transition-transform">
                                             <span class="material-symbols-outlined text-[18px]">account_balance_wallet</span>
                                         </a>
                                     </div>
@@ -104,48 +112,80 @@
         </div>
     </div>
 
-    <!-- Detailed Tabs -->
-    <div class="mb-4 flex gap-4 border-b border-border-light">
-        <button class="px-6 py-2 font-bold text-sm text-primary border-b-2 border-primary">Earnings Details</button>
-    </div>
-
-    <!-- Earnings Breakdown -->
-    <div class="card-surface shadow-premium overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="bg-background border-b border-border-light">
-                        <th class="px-6 py-4 text-[10px] font-bold text-text-secondary uppercase tracking-widest">તારીખ</th>
-                        <th class="px-6 py-4 text-[10px] font-bold text-text-secondary uppercase tracking-widest">મજૂરનું નામ</th>
-                        <th class="px-6 py-4 text-[10px] font-bold text-text-secondary uppercase tracking-widest">કામ</th>
-                        <th class="px-6 py-4 text-[10px] font-bold text-text-secondary uppercase tracking-widest text-center">હાજરી</th>
-                        <th class="px-6 py-4 text-[10px] font-bold text-text-secondary uppercase tracking-widest text-right">મજૂરી (₹)</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-border-light/50">
-                    @forelse($details as $detail)
-                        <tr class="hover:bg-background/20 transition-colors">
-                            <td class="px-6 py-4 font-bold text-text-primary">{{ \Carbon\Carbon::parse($detail->entry->date)->format('d/m/Y') }}</td>
-                            <td class="px-6 py-4 gujarati-text font-bold">{{ $detail->worker->name }}</td>
-                            <td class="px-6 py-4 text-xs">{{ $detail->work_type ?: '-' }}</td>
-                            <td class="px-6 py-4 text-center">
-                                @if($detail->attendance_type == 'full')
-                                    <span class="text-[10px] font-bold bg-green-100 text-green-700 px-2 py-1 rounded uppercase">આખો દિવસ</span>
-                                @elseif($detail->attendance_type == 'half')
-                                    <span class="text-[10px] font-bold bg-orange-100 text-orange-700 px-2 py-1 rounded uppercase">અડધો દિવસ</span>
-                                @else
-                                    <span class="text-[10px] font-bold bg-blue-100 text-blue-700 px-2 py-1 rounded uppercase">{{ $detail->hours }} કલાક</span>
-                                @endif
-                            </td>
-                            <td class="px-6 py-4 text-right font-black text-primary">₹ {{ number_format($detail->wage_amount, 2) }}</td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5" class="px-6 py-12 text-center text-text-secondary/30 italic">આ ફિલ્ટર મુજબ કોઈ વિગત મળી નથી.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+    @if($timeline->isNotEmpty())
+        <!-- Worker Timeline (Ledger style) -->
+        <div class="mb-4 flex gap-4 border-b border-border-light">
+            <button class="px-6 py-2 font-bold text-sm text-primary border-b-2 border-primary">મજૂર લેજર (Worker Ledger Timeline)</button>
         </div>
-    </div>
+        <div class="card-surface shadow-premium overflow-hidden mb-8">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-background border-b border-border-light">
+                            <th class="px-6 py-4 text-[10px] font-bold text-text-secondary uppercase tracking-widest">તારીખ</th>
+                            <th class="px-6 py-4 text-[10px] font-bold text-text-secondary uppercase tracking-widest">વિગત</th>
+                            <th class="px-6 py-4 text-[10px] font-bold text-text-secondary uppercase tracking-widest text-right">રકમ (+)</th>
+                            <th class="px-6 py-4 text-[10px] font-bold text-text-secondary uppercase tracking-widest text-right">ઉપાડ (-)</th>
+                            <th class="px-6 py-4 text-[10px] font-bold text-text-secondary uppercase tracking-widest text-right">બેલેન્સ</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-border-light/50">
+                        @foreach($timeline as $item)
+                            <tr class="hover:bg-background/20 transition-colors {{ $item->type == 'advance' ? 'bg-red-50/20' : '' }}">
+                                <td class="px-6 py-4 font-bold text-xs text-text-primary">{{ \Carbon\Carbon::parse($item->date)->format('d/m/Y') }}</td>
+                                <td class="px-6 py-4 gujarati-text text-sm">{{ $item->description }}</td>
+                                <td class="px-6 py-4 text-right font-bold text-green-600">{{ $item->type == 'earning' ? '₹ ' . number_format($item->amount, 2) : '-' }}</td>
+                                <td class="px-6 py-4 text-right font-bold text-red-600">{{ $item->type == 'advance' ? '₹ ' . number_format(abs($item->amount), 2) : '-' }}</td>
+                                <td class="px-6 py-4 text-right font-black text-text-primary">₹ {{ number_format($item->running_balance, 2) }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    @else
+        <!-- General Detailed Breakdown -->
+        <div class="mb-4 flex gap-4 border-b border-border-light">
+            <button class="px-6 py-2 font-bold text-sm text-primary border-b-2 border-primary">Earnings Details</button>
+        </div>
+
+        <div class="card-surface shadow-premium overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-background border-b border-border-light">
+                            <th class="px-6 py-4 text-[10px] font-bold text-text-secondary uppercase tracking-widest">તારીખ</th>
+                            <th class="px-6 py-4 text-[10px] font-bold text-text-secondary uppercase tracking-widest">મજૂરનું નામ</th>
+                            <th class="px-6 py-4 text-[10px] font-bold text-text-secondary uppercase tracking-widest">કામ</th>
+                            <th class="px-6 py-4 text-[10px] font-bold text-text-secondary uppercase tracking-widest text-center">હાજરી</th>
+                            <th class="px-6 py-4 text-[10px] font-bold text-text-secondary uppercase tracking-widest text-right">મજૂરી (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-border-light/50">
+                        @forelse($details as $detail)
+                            <tr class="hover:bg-background/20 transition-colors">
+                                <td class="px-6 py-4 font-bold text-text-primary">{{ \Carbon\Carbon::parse($detail->entry->date)->format('d/m/Y') }}</td>
+                                <td class="px-6 py-4 gujarati-text font-bold">{{ $detail->worker->name }}</td>
+                                <td class="px-6 py-4 text-xs">{{ $detail->work_type ?: '-' }}</td>
+                                <td class="px-6 py-4 text-center">
+                                    @if($detail->attendance_type == 'full')
+                                        <span class="text-[10px] font-bold bg-green-100 text-green-700 px-2 py-1 rounded uppercase">આખો દિવસ</span>
+                                    @elseif($detail->attendance_type == 'half')
+                                        <span class="text-[10px] font-bold bg-orange-100 text-orange-700 px-2 py-1 rounded uppercase">અડધો દિવસ</span>
+                                    @else
+                                        <span class="text-[10px] font-bold bg-blue-100 text-blue-700 px-2 py-1 rounded uppercase">{{ $detail->hours }} કલાક</span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4 text-right font-black text-primary">₹ {{ number_format($detail->wage_amount, 2) }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="px-6 py-12 text-center text-text-secondary/30 italic">આ ફિલ્ટર મુજબ કોઈ વિગત મળી નથી.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    @endif
 </x-app-layout>

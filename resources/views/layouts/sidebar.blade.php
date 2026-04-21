@@ -95,9 +95,9 @@
                     <span class="gujarati-text">સેટલમેન્ટ રીપોર્ટ</span>
                 </a>
                 
-                <a href="{{ route('reports.labour.ledger') }}" 
-                   class="flex items-center px-4 py-2.5 rounded-lg text-sm transition-all {{ request()->routeIs('reports.labour.ledger') ? 'text-primary font-bold bg-primary/10' : 'text-text-secondary hover:text-primary hover:bg-background' }}">
-                    <span class="gujarati-text">મજૂર લેજર</span>
+                <a href="{{ route('settlements.index') }}" 
+                   class="flex items-center px-4 py-2.5 rounded-lg text-sm transition-all {{ request()->routeIs('settlements.*') ? 'text-primary font-bold bg-primary/10' : 'text-text-secondary hover:text-primary hover:bg-background' }}">
+                    <span class="gujarati-text">પગાર પતાવટ (History)</span>
                 </a>
             </div>
         </div>

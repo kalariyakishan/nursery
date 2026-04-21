@@ -68,7 +68,7 @@ class LabourEntryController extends Controller
 
             $entry = LabourEntry::updateOrCreate(
                 ['date' => $request->date],
-                ['total_workers' => count($request->items), 'total_amount' => collect($request->items)->sum('wage_amount')]
+                ['date' => $request->date] // Just ensure it exists
             );
 
             // Clear old details if updating
@@ -97,9 +97,6 @@ class LabourEntryController extends Controller
                     ]);
                 }
             }
-
-            // Update total workers count if some were skipped (e.g. empty rows)
-            $entry->update(['total_workers' => $entry->details()->count()]);
 
             DB::commit();
             return redirect()->route('labour-entries.index')->with('success', 'ડેઈલી મજૂરી સફળતાપૂર્વક સાચવવામાં આવી!');

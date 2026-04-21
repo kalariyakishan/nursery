@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class LabourEntryDetail extends Model
 {
+    use SoftDeletes;
     protected $fillable = [
         'labour_entry_id',
         'worker_id',
@@ -13,8 +15,14 @@ class LabourEntryDetail extends Model
         'attendance_type',
         'hours',
         'wage_amount',
-        'notes'
+        'notes',
+        'settlement_id'
     ];
+
+    public function settlement()
+    {
+        return $this->belongsTo(Settlement::class);
+    }
 
     public function entry()
     {

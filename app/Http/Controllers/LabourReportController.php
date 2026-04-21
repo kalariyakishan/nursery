@@ -16,18 +16,33 @@ class LabourReportController extends Controller
 {
     public function index(Request $request)
     {
-        $month = $request->get('month', Carbon::now()->format('Y-m'));
         $workerId = $request->get('worker_id');
+        $month = $request->get('month');
+        $startDate = $request->get('start_date');
+        $endDate = $request->get('end_date');
+
+        // Handle Date Logic
+        if ($startDate && $endDate) {
+            // Use range, but for month input display we can't easily set it if it's not a full month
+            // We'll leave $month null or set it to something indicator-y
+        } else if ($month) {
+            $startDate = Carbon::parse($month)->startOfMonth()->format('Y-m-d');
+            $endDate = Carbon::parse($month)->endOfMonth()->format('Y-m-d');
+        } else {
+            $month = Carbon::now()->format('Y-m');
+            $startDate = Carbon::now()->startOfMonth()->format('Y-m-d');
+            $endDate = Carbon::now()->endOfMonth()->format('Y-m-d');
+        }
         
         // Fetch Daily Earnings
         $earningsQuery = LabourEntryDetail::with('entry', 'worker')
-            ->whereHas('entry', function($q) use ($month) {
-                $q->where('date', 'like', $month . '%');
+            ->whereHas('entry', function($q) use ($startDate, $endDate) {
+                $q->whereBetween('date', [$startDate, $endDate]);
             });
 
         // Fetch Advances
         $advancesQuery = Advance::with('worker')
-            ->where('date', 'like', $month . '%');
+            ->whereBetween('date', [$startDate, $endDate]);
 
         if ($workerId) {
             $earningsQuery->where('worker_id', $workerId);
@@ -67,27 +82,14 @@ class LabourReportController extends Controller
             'total_days' => $details->groupBy('labour_entry_id')->count(),
         ];
 
-        return view('reports.labour.index', compact('details', 'advances', 'settlements', 'workers', 'stats', 'month', 'workerId'));
-    }
-
-    public function ledger(Request $request)
-    {
-        $workerId = $request->get('worker_id');
-        $startDate = $request->get('start_date', Carbon::now()->startOfMonth()->format('Y-m-d'));
-        $endDate = $request->get('end_date', Carbon::now()->endOfMonth()->format('Y-m-d'));
-        
-        $worker = $workerId ? Worker::find($workerId) : null;
-        $workers = Worker::orderBy('name')->get();
+        // Timeline Logic (Ledger) when worker is selected or for overall view? 
+        // User said "put filters in index so ledger not needed". 
+        // Ledger's main feature was the timeline with running balance for a specific worker.
         $timeline = collect();
-
-        if ($worker) {
-            $earnings = LabourEntryDetail::with('entry')
-                ->where('worker_id', $workerId)
-                ->whereHas('entry', function($q) use ($startDate, $endDate) {
-                    $q->whereBetween('date', [$startDate, $endDate]);
-                })->get();
-
-            foreach ($earnings as $e) {
+        if ($workerId && $relevantWorkers->count() == 1) {
+            $worker = $relevantWorkers->first();
+            
+            foreach ($details as $e) {
                 $timeline->push((object)[
                     'date' => $e->entry->date,
                     'type' => 'earning',
@@ -96,10 +98,6 @@ class LabourReportController extends Controller
                     'raw_date' => $e->entry->date
                 ]);
             }
-
-            $advances = Advance::where('worker_id', $workerId)
-                ->whereBetween('date', [$startDate, $endDate])
-                ->get();
 
             foreach ($advances as $a) {
                 $timeline->push((object)[
@@ -113,7 +111,6 @@ class LabourReportController extends Controller
 
             $timeline = $timeline->sortBy('raw_date');
             
-            // Running balance logic
             $balance = 0;
             foreach ($timeline as $item) {
                 $balance += $item->amount;
@@ -121,21 +118,37 @@ class LabourReportController extends Controller
             }
         }
 
-        return view('reports.labour.ledger', compact('worker', 'workers', 'timeline', 'startDate', 'endDate', 'workerId'));
+        return view('reports.labour.index', compact(
+            'details', 'advances', 'settlements', 'workers', 
+            'stats', 'month', 'workerId', 'startDate', 'endDate', 'timeline'
+        ));
     }
 
     public function exportPdf(Request $request)
     {
-        $month = $request->get('month', Carbon::now()->format('Y-m'));
+        $month = $request->get('month');
         $workerId = $request->get('worker_id');
+        $startDate = $request->get('start_date');
+        $endDate = $request->get('end_date');
+
+        if ($startDate && $endDate) {
+            // Use range
+        } else if ($month) {
+            $startDate = Carbon::parse($month)->startOfMonth()->format('Y-m-d');
+            $endDate = Carbon::parse($month)->endOfMonth()->format('Y-m-d');
+        } else {
+            $month = Carbon::now()->format('Y-m');
+            $startDate = Carbon::now()->startOfMonth()->format('Y-m-d');
+            $endDate = Carbon::now()->endOfMonth()->format('Y-m-d');
+        }
         
         $earningsQuery = LabourEntryDetail::with('entry', 'worker')
-            ->whereHas('entry', function($q) use ($month) {
-                $q->where('date', 'like', $month . '%');
+            ->whereHas('entry', function($q) use ($startDate, $endDate) {
+                $q->whereBetween('date', [$startDate, $endDate]);
             });
 
         $advancesQuery = Advance::with('worker')
-            ->where('date', 'like', $month . '%');
+            ->whereBetween('date', [$startDate, $endDate]);
 
         if ($workerId) {
             $earningsQuery->where('worker_id', $workerId);
@@ -146,22 +159,35 @@ class LabourReportController extends Controller
         $advances = $advancesQuery->get();
         $worker = $workerId ? Worker::find($workerId) : null;
 
-        $pdf = Pdf::loadView('reports.labour.pdf', compact('details', 'advances', 'month', 'worker'));
-        return $pdf->download("labour_report_{$month}.pdf");
+        $pdf = Pdf::loadView('reports.labour.pdf', compact('details', 'advances', 'month', 'worker', 'startDate', 'endDate'));
+        return $pdf->download("labour_report_" . ($month ?: $startDate . '_to_' . $endDate) . ".pdf");
     }
 
     public function exportExcel(Request $request)
     {
-        $month = $request->get('month', Carbon::now()->format('Y-m'));
+        $month = $request->get('month');
         $workerId = $request->get('worker_id');
+        $startDate = $request->get('start_date');
+        $endDate = $request->get('end_date');
+
+        if ($startDate && $endDate) {
+            // Use range
+        } else if ($month) {
+            $startDate = Carbon::parse($month)->startOfMonth()->format('Y-m-d');
+            $endDate = Carbon::parse($month)->endOfMonth()->format('Y-m-d');
+        } else {
+            $month = Carbon::now()->format('Y-m');
+            $startDate = Carbon::now()->startOfMonth()->format('Y-m-d');
+            $endDate = Carbon::now()->endOfMonth()->format('Y-m-d');
+        }
         
         $earningsQuery = LabourEntryDetail::with('entry', 'worker')
-            ->whereHas('entry', function($q) use ($month) {
-                $q->where('date', 'like', $month . '%');
+            ->whereHas('entry', function($q) use ($startDate, $endDate) {
+                $q->whereBetween('date', [$startDate, $endDate]);
             });
 
         $advancesQuery = Advance::with('worker')
-            ->where('date', 'like', $month . '%');
+            ->whereBetween('date', [$startDate, $endDate]);
 
         if ($workerId) {
             $earningsQuery->where('worker_id', $workerId);
@@ -171,7 +197,7 @@ class LabourReportController extends Controller
         $details = $earningsQuery->get();
         $advances = $advancesQuery->get();
 
-        $fileName = "labour_report_{$month}.csv";
+        $fileName = "labour_report_" . ($month ?: $startDate . '_to_' . $endDate) . ".csv";
         $headers = array(
             "Content-type"        => "text/csv",
             "Content-Disposition" => "attachment; filename=$fileName",
@@ -180,11 +206,11 @@ class LabourReportController extends Controller
             "Expires"             => "0"
         );
 
-        $callback = function() use($details, $advances) {
+        $callback = function() use($details, $advances, $startDate, $endDate) {
             $file = fopen('php://output', 'w');
             
             // Settlement Summary
-            fputcsv($file, array('MONTHLY SETTLEMENT SUMMARY'));
+            fputcsv($file, array('LABOUR SETTLEMENT SUMMARY (' . $startDate . ' to ' . $endDate . ')'));
             fputcsv($file, array('Worker Name', 'Total Days', 'Total Earnings', 'Total Advance', 'Final Payable'));
             
             $workerGroups = $details->groupBy('worker_id');
