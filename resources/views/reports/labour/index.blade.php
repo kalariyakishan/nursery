@@ -5,13 +5,9 @@
             <p class="text-[10px] font-bold text-text-secondary uppercase tracking-[0.2em] mt-1">Monthly Labour Wages Report</p>
         </div>
         <div class="flex gap-4">
-            <a href="{{ route('reports.labour.pdf', ['month' => $month, 'worker_id' => $workerId]) }}" class="bg-white text-red-600 px-6 py-3 rounded-lg border border-red-100 font-bold text-sm flex items-center gap-2 hover:bg-red-50 transition-all">
-                <span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
-                PDF
-            </a>
-            <a href="{{ route('reports.labour.excel', ['month' => $month, 'worker_id' => $workerId]) }}" class="bg-white text-green-600 px-6 py-3 rounded-lg border border-green-100 font-bold text-sm flex items-center gap-2 hover:bg-green-50 transition-all">
-                <span class="material-symbols-outlined text-[18px]">table_view</span>
-                EXCEL
+            <a href="{{ route('reports.labour.excel', ['month' => $month, 'worker_id' => $workerId, 'start_date' => $startDate, 'end_date' => $endDate]) }}" class="bg-green-50 text-green-600 px-6 py-3 rounded-lg font-bold text-sm flex items-center gap-2 hover:bg-green-600 hover:text-white transition-all shadow-sm">
+                <span class="material-symbols-outlined text-[18px]">description</span>
+                Excel ડાઉનલોડ
             </a>
         </div>
     </div>
@@ -80,8 +76,10 @@
                         <tr class="bg-background border-b border-border-light">
                             <th class="px-6 py-4 text-[10px] font-bold text-text-secondary uppercase tracking-widest">મજૂરનું નામ</th>
                             <th class="px-6 py-4 text-[10px] font-bold text-text-secondary uppercase tracking-widest text-center">દિવસો</th>
+                            <th class="px-6 py-4 text-[10px] font-bold text-text-secondary uppercase tracking-widest text-right">આગળની બાકી</th>
                             <th class="px-6 py-4 text-[10px] font-bold text-text-secondary uppercase tracking-widest text-right">કુલ કમાણી (+)</th>
                             <th class="px-6 py-4 text-[10px] font-bold text-text-secondary uppercase tracking-widest text-right">કુલ ઉપાડ (-)</th>
+                            <th class="px-6 py-4 text-[10px] font-bold text-text-secondary uppercase tracking-widest text-right">ચૂકવેલ (Paid)</th>
                             <th class="px-6 py-4 text-[10px] font-bold text-text-secondary uppercase tracking-widest text-right">ચૂકવવાના બાકી</th>
                         </tr>
                     </thead>
@@ -97,8 +95,10 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 text-center font-bold text-text-secondary">{{ $s->total_days }}</td>
+                                <td class="px-6 py-4 text-right font-bold {{ $s->opening_balance >= 0 ? 'text-primary' : 'text-red-500' }}">₹ {{ number_format($s->opening_balance, 2) }}</td>
                                 <td class="px-6 py-4 text-right font-bold text-green-600">₹ {{ number_format($s->total_earnings, 2) }}</td>
                                 <td class="px-6 py-4 text-right font-bold text-red-600">₹ {{ number_format($s->total_advance, 2) }}</td>
+                                <td class="px-6 py-4 text-right font-bold text-blue-600">₹ {{ number_format($s->total_paid, 2) }}</td>
                                 <td class="px-6 py-4 text-right">
                                     <span class="px-3 py-1 rounded-lg {{ $s->final_payable >= 0 ? 'bg-primary/10 text-primary' : 'bg-red-100 text-red-600' }} font-black text-sm">
                                         ₹ {{ number_format($s->final_payable, 2) }}
@@ -125,17 +125,22 @@
                             <th class="px-6 py-4 text-[10px] font-bold text-text-secondary uppercase tracking-widest">તારીખ</th>
                             <th class="px-6 py-4 text-[10px] font-bold text-text-secondary uppercase tracking-widest">વિગત</th>
                             <th class="px-6 py-4 text-[10px] font-bold text-text-secondary uppercase tracking-widest text-right">રકમ (+)</th>
-                            <th class="px-6 py-4 text-[10px] font-bold text-text-secondary uppercase tracking-widest text-right">ઉપાડ (-)</th>
+                            <th class="px-6 py-4 text-[10px] font-bold text-text-secondary uppercase tracking-widest text-right">ઉપાડ / ચુકવણી (-)</th>
                             <th class="px-6 py-4 text-[10px] font-bold text-text-secondary uppercase tracking-widest text-right">બેલેન્સ</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-border-light/50">
                         @foreach($timeline as $item)
-                            <tr class="hover:bg-background/20 transition-colors {{ $item->type == 'advance' ? 'bg-red-50/20' : '' }}">
+                            <tr class="hover:bg-background/20 transition-colors {{ in_array($item->type, ['advance', 'settlement']) ? 'bg-red-50/20' : '' }}">
                                 <td class="px-6 py-4 font-bold text-xs text-text-primary">{{ \Carbon\Carbon::parse($item->date)->format('d/m/Y') }}</td>
-                                <td class="px-6 py-4 gujarati-text text-sm">{{ $item->description }}</td>
+                                <td class="px-6 py-4 gujarati-text text-sm">
+                                    {{ $item->description }}
+                                    @if($item->type == 'settlement')
+                                        <span class="ml-2 px-1.5 py-0.5 bg-blue-100 text-blue-700 text-[9px] font-black uppercase rounded">પતાવટ</span>
+                                    @endif
+                                </td>
                                 <td class="px-6 py-4 text-right font-bold text-green-600">{{ $item->type == 'earning' ? '₹ ' . number_format($item->amount, 2) : '-' }}</td>
-                                <td class="px-6 py-4 text-right font-bold text-red-600">{{ $item->type == 'advance' ? '₹ ' . number_format(abs($item->amount), 2) : '-' }}</td>
+                                <td class="px-6 py-4 text-right font-bold text-red-600">{{ in_array($item->type, ['advance', 'settlement']) ? '₹ ' . number_format(abs($item->amount), 2) : '-' }}</td>
                                 <td class="px-6 py-4 text-right font-black text-text-primary">₹ {{ number_format($item->running_balance, 2) }}</td>
                             </tr>
                         @endforeach

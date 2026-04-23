@@ -71,11 +71,13 @@ Route::middleware('auth')->group(function () {
     Route::get('reports/labour/export/excel', [App\Http\Controllers\LabourReportController::class, 'exportExcel'])->name('reports.labour.excel');
 
     // Rojmel Routes
+    Route::get('rojmel/dashboard', [App\Http\Controllers\RojmelController::class, 'dashboard'])->name('rojmel.dashboard');
     Route::get('rojmel', [App\Http\Controllers\RojmelController::class, 'index'])->name('rojmel.index');
     Route::post('rojmel', [App\Http\Controllers\RojmelController::class, 'store'])->name('rojmel.store');
     Route::delete('rojmel/{rojmel}', [App\Http\Controllers\RojmelController::class, 'destroy'])->name('rojmel.destroy');
     Route::get('rojmel/report', [App\Http\Controllers\RojmelController::class, 'report'])->name('rojmel.report');
     Route::get('rojmel/export/pdf', [App\Http\Controllers\RojmelController::class, 'exportPdf'])->name('rojmel.pdf');
+    Route::get('rojmel/export/excel', [App\Http\Controllers\RojmelController::class, 'exportExcel'])->name('rojmel.excel');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

@@ -5,6 +5,10 @@
             <p class="text-[10px] font-bold text-text-secondary uppercase tracking-[0.2em] mt-1">Cash flow summaries over time</p>
         </div>
         <div class="flex gap-4">
+            <a href="{{ route('rojmel.dashboard') }}" class="bg-white text-text-secondary px-6 py-3 rounded-lg border border-border-light font-bold text-sm flex items-center gap-2 hover:bg-background transition-all">
+                <span class="material-symbols-outlined text-[18px]">dashboard</span>
+                ડેશબોર્ડ
+            </a>
             <a href="{{ route('rojmel.index') }}" class="bg-white text-text-secondary px-6 py-3 rounded-lg border border-border-light font-bold text-sm flex items-center gap-2 hover:bg-background transition-all">
                 <span class="material-symbols-outlined text-[18px]">arrow_back</span>
                 પાછા જાઓ
@@ -12,6 +16,10 @@
             <a href="{{ route('rojmel.pdf', ['start_date' => $startDate, 'end_date' => $endDate]) }}" class="bg-red-50 text-red-600 px-6 py-3 rounded-lg font-bold text-sm flex items-center gap-2 hover:bg-red-600 hover:text-white transition-all">
                 <span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
                 રીપોર્ટ PDF
+            </a>
+            <a href="{{ route('rojmel.excel', ['start_date' => $startDate, 'end_date' => $endDate]) }}" class="bg-green-50 text-green-600 px-6 py-3 rounded-lg font-bold text-sm flex items-center gap-2 hover:bg-green-600 hover:text-white transition-all">
+                <span class="material-symbols-outlined text-[18px]">description</span>
+                Excel ડાઉનલોડ
             </a>
         </div>
     </div>

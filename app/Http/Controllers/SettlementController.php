@@ -136,6 +136,16 @@ class SettlementController extends Controller
             LabourEntryDetail::whereIn('id', $earnings->pluck('id'))->update(['settlement_id' => $settlement->id]);
             Advance::whereIn('id', $advances->pluck('id'))->update(['settlement_id' => $settlement->id]);
 
+            // Create Rojmel Entry
+            \App\Models\RojmelEntry::create([
+                'settlement_id' => $settlement->id,
+                'date' => $request->settlement_date,
+                'type' => 'javak',
+                'amount' => $request->paid_amount,
+                'category' => 'મજૂરી ખર્ચ',
+                'description' => "પગાર પતાવટ: " . $settlement->worker->name . " (" . Carbon::parse($startDate)->format('d/m') . " થી " . Carbon::parse($endDate)->format('d/m') . ")",
+            ]);
+
             DB::commit();
             return redirect()->route('settlements.index')->with('success', 'પગાર પતાવટ (Settlement) સફળતાપૂર્વક પૂર્ણ થઈ!');
 

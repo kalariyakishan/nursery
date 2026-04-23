@@ -10,6 +10,7 @@ class RojmelEntry extends Model
     use HasFactory;
 
     protected $fillable = [
+        'settlement_id',
         'date',
         'type',
         'amount',

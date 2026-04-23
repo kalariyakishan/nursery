@@ -11,6 +11,9 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 
 use App\Models\Advance;
+use App\Exports\LabourReportExport;
+use App\Exports\LabourWorkerYearlyExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class LabourReportController extends Controller
 {
@@ -53,6 +56,13 @@ class LabourReportController extends Controller
         $advances = $advancesQuery->orderBy('date', 'asc')->get();
         $workers = Worker::orderBy('name')->get();
 
+        // Fetch Settlements in this period
+        $periodSettlements = \App\Models\Settlement::whereBetween('settlement_date', [$startDate, $endDate]);
+        if ($workerId) {
+            $periodSettlements->where('worker_id', $workerId);
+        }
+        $periodSettlements = $periodSettlements->get();
+
         // Group by worker for settlement table
         $settlements = [];
         $relevantWorkers = $workerId ? Worker::where('id', $workerId)->get() : $workers;
@@ -60,17 +70,35 @@ class LabourReportController extends Controller
         foreach ($relevantWorkers as $worker) {
             $workerEarnings = $details->where('worker_id', $worker->id);
             $workerAdvances = $advances->where('worker_id', $worker->id);
+            $workerSettled = $periodSettlements->where('worker_id', $worker->id);
             
-            if ($workerEarnings->count() > 0 || $workerAdvances->count() > 0) {
+            // Calculate opening balance before $startDate
+            $prevEarnings = LabourEntryDetail::where('worker_id', $worker->id)
+                ->whereHas('entry', function($q) use ($startDate) {
+                    $q->where('date', '<', $startDate);
+                })->sum('wage_amount');
+            $prevAdvances = Advance::where('worker_id', $worker->id)
+                ->where('date', '<', $startDate)
+                ->sum('amount');
+            $prevSettled = \App\Models\Settlement::where('worker_id', $worker->id)
+                ->where('settlement_date', '<', $startDate)
+                ->sum('paid_amount');
+            
+            $openingBalance = $prevEarnings - $prevAdvances - $prevSettled;
+
+            if ($workerEarnings->count() > 0 || $workerAdvances->count() > 0 || $workerSettled->count() > 0 || $openingBalance != 0) {
                 $totalEarnings = $workerEarnings->sum('wage_amount');
                 $totalAdvance = $workerAdvances->sum('amount');
+                $totalPaid = $workerSettled->sum('paid_amount');
                 
                 $settlements[] = (object)[
                     'worker' => $worker,
                     'total_days' => $workerEarnings->groupBy('labour_entry_id')->count(),
+                    'opening_balance' => $openingBalance,
                     'total_earnings' => $totalEarnings,
                     'total_advance' => $totalAdvance,
-                    'final_payable' => $totalEarnings - $totalAdvance
+                    'total_paid' => $totalPaid,
+                    'final_payable' => $openingBalance + $totalEarnings - $totalAdvance - $totalPaid
                 ];
             }
         }
@@ -106,6 +134,16 @@ class LabourReportController extends Controller
                     'description' => 'ઉપાડ: ' . ($a->note ?: '-'),
                     'amount' => -$a->amount,
                     'raw_date' => $a->date
+                ]);
+            }
+
+            foreach ($periodSettlements as $s) {
+                $timeline->push((object)[
+                    'date' => $s->settlement_date,
+                    'type' => 'settlement',
+                    'description' => 'પગાર પતાવટ (' . $s->payment_method . ')',
+                    'amount' => -$s->paid_amount,
+                    'raw_date' => $s->settlement_date
                 ]);
             }
 
@@ -169,7 +207,15 @@ class LabourReportController extends Controller
         $workerId = $request->get('worker_id');
         $startDate = $request->get('start_date');
         $endDate = $request->get('end_date');
+        $year = $request->get('year', date('Y'));
 
+        // If worker is selected, provide the "Rojmel style" multi-sheet yearly report
+        if ($workerId) {
+            $worker = Worker::find($workerId);
+            return Excel::download(new LabourWorkerYearlyExport($workerId, $year), "Labour_Report_{$worker->name}_{$year}.xlsx");
+        }
+
+        // Otherwise provide general range report
         if ($startDate && $endDate) {
             // Use range
         } else if ($month) {
@@ -189,61 +235,61 @@ class LabourReportController extends Controller
         $advancesQuery = Advance::with('worker')
             ->whereBetween('date', [$startDate, $endDate]);
 
-        if ($workerId) {
-            $earningsQuery->where('worker_id', $workerId);
-            $advancesQuery->where('worker_id', $workerId);
-        }
-
         $details = $earningsQuery->get();
         $advances = $advancesQuery->get();
 
-        $fileName = "labour_report_" . ($month ?: $startDate . '_to_' . $endDate) . ".csv";
-        $headers = array(
-            "Content-type"        => "text/csv",
-            "Content-Disposition" => "attachment; filename=$fileName",
-            "Pragma"              => "no-cache",
-            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
-            "Expires"             => "0"
-        );
+        // Fetch all workers who have data OR existing balance
+        $allWorkers = Worker::orderBy('name')->get();
+        $settlements = [];
 
-        $callback = function() use($details, $advances, $startDate, $endDate) {
-            $file = fopen('php://output', 'w');
+        // Fetch Settlements in this period
+        $periodSettlements = \App\Models\Settlement::whereBetween('settlement_date', [$startDate, $endDate])->get();
+
+        foreach ($allWorkers as $w) {
+            $workerEarnings = $details->where('worker_id', $w->id);
+            $workerAdvances = $advances->where('worker_id', $w->id);
+            $workerSettled = $periodSettlements->where('worker_id', $w->id);
+
+            // Calculate opening balance before $startDate
+            $prevEarnings = LabourEntryDetail::where('worker_id', $w->id)
+                ->whereHas('entry', function($q) use ($startDate) {
+                    $q->where('date', '<', $startDate);
+                })->sum('wage_amount');
+            $prevAdvances = Advance::where('worker_id', $w->id)
+                ->where('date', '<', $startDate)
+                ->sum('amount');
+            $prevSettled = \App\Models\Settlement::where('worker_id', $w->id)
+                ->where('settlement_date', '<', $startDate)
+                ->sum('paid_amount');
             
-            // Settlement Summary
-            fputcsv($file, array('LABOUR SETTLEMENT SUMMARY (' . $startDate . ' to ' . $endDate . ')'));
-            fputcsv($file, array('Worker Name', 'Total Days', 'Total Earnings', 'Total Advance', 'Final Payable'));
-            
-            $workerGroups = $details->groupBy('worker_id');
-            foreach ($workerGroups as $wid => $workerEarnings) {
-                $worker = $workerEarnings->first()->worker;
+            $openingBalance = $prevEarnings - $prevAdvances - $prevSettled;
+
+            if ($workerEarnings->count() > 0 || $workerAdvances->count() > 0 || $workerSettled->count() > 0 || $openingBalance != 0) {
                 $totalEarnings = $workerEarnings->sum('wage_amount');
-                $totalAdvance = $advances->where('worker_id', $wid)->sum('amount');
-                fputcsv($file, array(
-                    $worker->name,
-                    $workerEarnings->groupBy('labour_entry_id')->count(),
-                    $totalEarnings,
-                    $totalAdvance,
-                    $totalEarnings - $totalAdvance
-                ));
+                $totalAdvance = $workerAdvances->sum('amount');
+                $totalPaid = $workerSettled->sum('paid_amount');
+
+                $settlements[] = (object)[
+                    'worker' => $w,
+                    'total_days' => $workerEarnings->groupBy('labour_entry_id')->count(),
+                    'opening_balance' => $openingBalance,
+                    'total_earnings' => $totalEarnings,
+                    'total_advance' => $totalAdvance,
+                    'total_paid' => $totalPaid,
+                    'final_payable' => $openingBalance + $totalEarnings - $totalAdvance - $totalPaid
+                ];
             }
+        }
 
-            fputcsv($file, array(''));
-            fputcsv($file, array('DETAILED EARNINGS'));
-            fputcsv($file, array('Date', 'Worker Name', 'Work Type', 'Amount'));
-            foreach ($details as $d) {
-                fputcsv($file, array($d->entry->date, $d->worker->name, $d->work_type, $d->wage_amount));
-            }
+        $rangeString = Carbon::parse($startDate)->format('d/m/Y') . ' થી ' . Carbon::parse($endDate)->format('d/m/Y');
+        
+        $data = [
+            'settlements' => $settlements,
+            'details' => $details,
+            'advances' => $advances,
+            'worker' => null
+        ];
 
-            fputcsv($file, array(''));
-            fputcsv($file, array('DETAILED ADVANCES (UPAD)'));
-            fputcsv($file, array('Date', 'Worker Name', 'Note', 'Amount'));
-            foreach ($advances as $a) {
-                fputcsv($file, array($a->date, $a->worker->name, $a->note, $a->amount));
-            }
-
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
+        return Excel::download(new LabourReportExport($data, "Labour_Summary", $rangeString), "labour_summary_{$startDate}_{$endDate}.xlsx");
     }
 }
