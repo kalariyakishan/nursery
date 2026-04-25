@@ -69,8 +69,9 @@
                 $isSummaryRow = !isset($b->date) || !is_object($b->date);
                 $dateStr = !$isSummaryRow ? (is_string($b->date) ? $b->date : $b->date->format('Y-m-d')) : null;
                 
-                $avakEntries = $dateStr ? ($entries[$dateStr]->where('type', 'avak')->values() ?? collect()) : collect();
-                $javakEntries = $dateStr ? ($entries[$dateStr]->where('type', 'javak')->values() ?? collect()) : collect();
+                $dayEntries = $dateStr ? (collect($entries)->get($dateStr) ?? collect()) : collect();
+                $avakEntries = $dayEntries->where('type', 'avak')->values();
+                $javakEntries = $dayEntries->where('type', 'javak')->values();
                 
                 $dayAvak = data_get($b, 'total_avak') ?? data_get($b, 'income', 0);
                 $dayJavak = data_get($b, 'total_javak') ?? data_get($b, 'expense', 0);
