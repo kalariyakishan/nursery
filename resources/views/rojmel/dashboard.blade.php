@@ -18,6 +18,15 @@
                 <span class="material-symbols-outlined text-[18px]">description</span>
                 આખા વર્ષનું Excel
             </a>
+            @if(Auth::user()->googleIntegration)
+                <form action="{{ route('google.sync.manual.rojmel') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="bg-blue-50 text-blue-600 px-6 py-3 rounded-lg font-bold text-sm flex items-center gap-2 hover:bg-blue-600 hover:text-white transition-all border border-blue-100">
+                        <span class="material-symbols-outlined text-[18px]">cloud_sync</span>
+                        Google Sync
+                    </button>
+                </form>
+            @endif
             <a href="{{ route('rojmel.index') }}" class="primary-btn flex items-center gap-2 px-6 shadow-premium-hover">
                 <span class="material-symbols-outlined text-[20px]">add_circle</span>
                 નવી એન્ટ્રી

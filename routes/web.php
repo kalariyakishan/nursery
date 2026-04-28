@@ -87,6 +87,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Google Sync Routes
+    Route::prefix('settings/google-sync')->name('google.sync.')->group(function () {
+        Route::get('/', [App\Http\Controllers\GoogleSyncController::class, 'settings'])->name('settings');
+        Route::get('/redirect', [App\Http\Controllers\GoogleSyncController::class, 'redirect'])->name('redirect');
+        Route::get('/callback', [App\Http\Controllers\GoogleSyncController::class, 'callback'])->name('callback');
+        Route::post('/disconnect', [App\Http\Controllers\GoogleSyncController::class, 'disconnect'])->name('disconnect');
+        Route::post('/toggle-auto', [App\Http\Controllers\GoogleSyncController::class, 'toggleAutoSync'])->name('toggle_auto');
+        Route::post('/manual', [App\Http\Controllers\GoogleSyncController::class, 'manualSync'])->name('manual');
+        Route::post('/manual/rojmel', [App\Http\Controllers\GoogleSyncController::class, 'manualSyncRojmel'])->name('manual.rojmel');
+        Route::post('/manual/labour', [App\Http\Controllers\GoogleSyncController::class, 'manualSyncLabour'])->name('manual.labour');
+    });
 });
 
 require __DIR__.'/auth.php';

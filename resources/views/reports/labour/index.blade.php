@@ -9,6 +9,15 @@
                 <span class="material-symbols-outlined text-[18px]">description</span>
                 Excel ડાઉનલોડ
             </a>
+            @if(Auth::user()->googleIntegration)
+                <form action="{{ route('google.sync.manual.labour') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="bg-blue-50 text-blue-600 px-6 py-3 rounded-lg font-bold text-sm flex items-center gap-2 hover:bg-blue-600 hover:text-white transition-all border border-blue-100 shadow-sm">
+                        <span class="material-symbols-outlined text-[18px]">cloud_sync</span>
+                        Google Sync
+                    </button>
+                </form>
+            @endif
         </div>
     </div>
 

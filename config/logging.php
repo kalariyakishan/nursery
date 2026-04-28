@@ -127,6 +127,12 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        'google_sync' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/google_sync.log'),
+            'level' => 'debug',
+        ],
+
     ],
 
 ];

@@ -143,20 +143,38 @@
 
                 <!-- Right: Preview Area (Content Area) -->
                 <div class="w-full md:w-3/4 lg:w-[78%]">
-                    <div
-                        class="flex justify-center items-start bg-slate-100/50 py-8 rounded-[2.5rem] border-2 border-dashed border-primary/10 overflow-hidden print:bg-transparent print:p-0 print:border-none min-h-[900px]">
-
-                        <div class="printable-bill transition-all duration-500 ease-in-out bg-white shadow-[0_30px_60px_-15px_rgba(0,0,0,0.15)] ring-1 ring-black/5 origin-top scale-[0.65] lg:scale-[0.85] print:scale-100 print:shadow-none print:ring-0 print:border-none"
-                            id="capture-area">
-                            <div id="print-area">
-                                @if(isset($isPdf) && $isPdf)
-                                    @include('invoices.template')
-                                @else
-                                    @include('invoices.print_template')
-                                @endif
+                    <div class="relative group/preview">
+                        <!-- Preview Header -->
+                        <div class="flex items-center justify-between mb-4 px-6 no-print">
+                            <div class="flex items-center gap-3">
+                                <div class="w-2 h-8 bg-primary rounded-full"></div>
+                                <h3 class="text-xl font-black text-slate-800 gujarati-text tracking-tight">લાઇવ પ્રિવ્યુ (Live Letter Preview)</h3>
+                            </div>
+                            <div class="flex items-center gap-2 px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-black uppercase tracking-widest animate-pulse">
+                                <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                                Premium View
                             </div>
                         </div>
 
+                        <!-- The "Tabletop" Container -->
+                        <div class="bg-slate-500/90 backdrop-blur-sm rounded-[3rem] p-4 md:p-12 shadow-inner border-[6px] border-white/50 relative overflow-hidden print:bg-transparent print:p-0 print:border-none min-h-[1000px] flex justify-center">
+                            
+                            <!-- Subtle Paper Texture Overlay -->
+                            <div class="absolute inset-0 opacity-[0.05] pointer-events-none" style="background-image: url('https://www.transparenttextures.com/patterns/natural-paper.png');"></div>
+
+                            <!-- The "Paper" -->
+                            <div class="printable-bill transition-all duration-500 ease-in-out bg-white shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] ring-1 ring-black/5 origin-top scale-[0.6] sm:scale-[0.7] md:scale-[0.8] lg:scale-[0.95] xl:scale-100 print:scale-100 print:shadow-none print:ring-0 print:border-none"
+                                id="capture-area">
+                                <div id="print-area">
+                                    @if(isset($isPdf) && $isPdf)
+                                        @include('invoices.template')
+                                    @else
+                                        @include('invoices.print_template')
+                                    @endif
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
 
