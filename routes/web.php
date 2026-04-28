@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\OfferController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -35,6 +36,10 @@ Route::middleware('auth')->group(function () {
     Route::get('invoices/data', [InvoiceController::class, 'getData'])->name('invoices.data');
     Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'pdf'])->name('invoices.pdf');
     Route::resource('invoices', InvoiceController::class);
+
+    Route::get('offers/data', [OfferController::class, 'getData'])->name('offers.data');
+    Route::get('offers/{offer}/pdf', [OfferController::class, 'pdf'])->name('offers.pdf');
+    Route::resource('offers', OfferController::class)->except(['edit', 'update']);
 
     Route::get('settings', [App\Http\Controllers\SettingController::class, 'index'])->name('settings.index');
     Route::post('settings', [App\Http\Controllers\SettingController::class, 'update'])->name('settings.update');

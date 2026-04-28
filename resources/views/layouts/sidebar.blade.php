@@ -51,6 +51,32 @@
                 </a>
             </div>
         </div>
+
+        <div x-data="{ offerOpen: {{ request()->routeIs('offers.*') ? 'true' : 'false' }} }">
+            <button @click="offerOpen = !offerOpen"
+                class="w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-200 {{ request()->routeIs('offers.*') ? 'bg-background text-primary font-bold' : 'text-text-secondary hover:bg-background hover:text-primary' }}">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-[20px]" style="{{ request()->routeIs('offers.*') ? "font-variation-settings: 'FILL' 1;" : '' }}">description</span>
+                    <span class="gujarati-text text-sm">ઓફર / એસ્ટિમેટ</span>
+                </div>
+                <span class="material-symbols-outlined text-[18px] transition-transform duration-200" :class="offerOpen ? 'rotate-180' : ''">expand_more</span>
+            </button>
+
+            <div x-show="offerOpen"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 -translate-y-2"
+                 x-transition:enter-end="opacity-100 translate-y-0"
+                 class="ml-10 mt-1 border-l border-border-light/60 pl-2">
+                <a href="{{ route('offers.create') }}"
+                   class="flex items-center px-4 py-2.5 rounded-lg text-sm transition-all {{ request()->routeIs('offers.create') ? 'text-primary font-bold bg-primary/10' : 'text-text-secondary hover:text-primary hover:bg-background' }}">
+                    <span class="gujarati-text">નવું ઓફર બનાવો</span>
+                </a>
+                <a href="{{ route('offers.index') }}"
+                   class="flex items-center px-4 py-2.5 rounded-lg text-sm transition-all {{ request()->routeIs('offers.index', 'offers.show') ? 'text-primary font-bold bg-primary/10' : 'text-text-secondary hover:text-primary hover:bg-background' }}">
+                    <span class="gujarati-text">ઓફર હિસ્ટ્રી</span>
+                </a>
+            </div>
+        </div>
         
         <a href="{{ route('products.index') }}" 
            class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 {{ request()->routeIs('products.*') ? 'bg-primary text-white shadow-md font-semibold' : 'text-text-secondary hover:bg-background hover:text-primary' }}">
