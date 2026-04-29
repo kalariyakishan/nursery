@@ -168,6 +168,12 @@
             <span class="material-symbols-outlined text-[20px]" style="{{ request()->routeIs('google.sync.*') ? "font-variation-settings: 'FILL' 1;" : '' }}">cloud_sync</span>
             <span class="gujarati-text text-sm">Google Sheets Sync</span>
         </a>
+
+        <a href="{{ route('plantation-plans.index') }}" 
+           class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 {{ request()->routeIs('plantation-plans.*') ? 'bg-primary text-white shadow-md font-semibold' : 'text-text-secondary hover:bg-background hover:text-primary' }}">
+            <span class="material-symbols-outlined text-[20px]" style="{{ request()->routeIs('plantation-plans.*') ? "font-variation-settings: 'FILL' 1;" : '' }}">nature</span>
+            <span class="gujarati-text text-sm">Plantation Plans</span>
+        </a>
     </nav>
     
     <div class="p-4 border-t border-border-light">

@@ -32,10 +32,20 @@ function gujaratiAmountInWordsPrint($number) {
 }
 @endphp
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Gujarati:wght@400;600;700&display=swap');
-
+@font-face {
+    font-family: 'NotoSansGujarati';
+    src: url('{{ isset($isPdf) && $isPdf ? public_path('fonts/NotoSansGujarati-Regular.ttf') : asset('fonts/NotoSansGujarati-Regular.ttf') }}') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'NotoSansGujarati';
+    src: url('{{ isset($isPdf) && $isPdf ? public_path('fonts/NotoSansGujarati-Bold.ttf') : asset('fonts/NotoSansGujarati-Bold.ttf') }}') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
 .print-wrapper {
-    font-family: 'Inter', 'Noto Sans Gujarati', sans-serif;
+    font-family: 'NotoSansGujarati', 'Inter', sans-serif;
     color: #111827;
     background: #fff;
     margin: 0 auto;
@@ -99,6 +109,7 @@ function gujaratiAmountInWordsPrint($number) {
     display: flex;
     align-items: center;
     gap: 16px;
+    flex: 1;
 }
 
 .pt-logo {
@@ -109,6 +120,9 @@ function gujaratiAmountInWordsPrint($number) {
 .pt-brand-info {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    text-align: center;
+    flex: 1;
 }
 
 .pt-company-name {
@@ -120,6 +134,7 @@ function gujaratiAmountInWordsPrint($number) {
     margin: 0;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
 }
 
@@ -431,7 +446,7 @@ function gujaratiAmountInWordsPrint($number) {
 </style>
 
 <div class="print-wrapper {{ $paperSize ?? 'a4' }}" :class="paperSize">
-    <img src="{{ asset('images/watermark.png') }}" class="pt-watermark" alt="Watermark">
+    <img src="{{ isset($isPdf) && $isPdf ? public_path('images/watermark.png') : asset('images/watermark.png') }}" class="pt-watermark" alt="Watermark">
     
     <div class="pt-content">
         @php
@@ -483,7 +498,7 @@ function gujaratiAmountInWordsPrint($number) {
                 <div class="pt-strip"></div>
                 <div class="pt-header">
                     <div class="pt-header-left">
-                        <img src="{{ asset('images/logo.png') }}" class="pt-logo" alt="Logo">
+                        <img src="{{ isset($isPdf) && $isPdf ? public_path('images/logo.png') : asset('images/logo.png') }}" class="pt-logo" alt="Logo">
                         <div class="pt-brand-info">
                             <h1 class="pt-company-name">
                                 <span class="pt-stamp">NEW</span> VRUNDAVAN NURSERY

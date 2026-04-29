@@ -99,6 +99,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/manual/rojmel', [App\Http\Controllers\GoogleSyncController::class, 'manualSyncRojmel'])->name('manual.rojmel');
         Route::post('/manual/labour', [App\Http\Controllers\GoogleSyncController::class, 'manualSyncLabour'])->name('manual.labour');
     });
+
+    // Plantation Plans
+    Route::resource('plantation-plans', App\Http\Controllers\PlantationPlanController::class)->except(['create', 'edit', 'update']);
+    Route::post('plantation-plans/preview', [App\Http\Controllers\PlantationPlanController::class, 'calculatePreview'])->name('plantation-plans.preview');
+    Route::get('plantation-plans/{plantation_plan}/pdf', [App\Http\Controllers\PlantationPlanController::class, 'exportPdf'])->name('plantation-plans.pdf');
 });
 
 require __DIR__.'/auth.php';

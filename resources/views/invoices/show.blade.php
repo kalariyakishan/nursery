@@ -15,13 +15,18 @@
 
         <style>
             @media print {
+
                 /* Structurally hide navigation instead of visibility: hidden (which causes blank pages out of bounds) */
-                aside, header, .no-print {
+                aside,
+                header,
+                .no-print {
                     display: none !important;
                 }
 
                 /* Reset Tailwind's layout wrappers so they don't pad or restrict width */
-                html, body, main {
+                html,
+                body,
+                main {
                     margin: 0 !important;
                     padding: 0 !important;
                     width: 100% !important;
@@ -59,15 +64,14 @@
             }
         </style>
 
-        <div x-data="{ paperSize: 'a4' }" 
-         x-init="
-            const updatePrintStyle = (size) => {
-                const el = document.getElementById('dynamic-page-style');
-                el.innerText = `@page { size: ${size.toUpperCase()}; margin: 5mm; }`;
-            };
-            $watch('paperSize', val => updatePrintStyle(val));
-            updatePrintStyle(paperSize);
-         " class="min-h-screen">
+        <div x-data="{ paperSize: 'a4' }" x-init="
+                const updatePrintStyle = (size) => {
+                    const el = document.getElementById('dynamic-page-style');
+                    el.innerText = `@page { size: ${size.toUpperCase()}; margin: 5mm; }`;
+                };
+                $watch('paperSize', val => updatePrintStyle(val));
+                updatePrintStyle(paperSize);
+             " class="min-h-screen">
 
             <div class="mb-4 flex flex-col md:flex-row md:justify-between md:items-end gap-6 no-print">
                 <div class="p-4">
@@ -128,13 +132,13 @@
                                     <span class="material-symbols-outlined font-bold text-[20px]">print</span>
                                     પ્રિન્ટ (PRINT)
                                 </button>
-                                <!--
+
                                 <button type="submit"
                                     class="w-full py-3 rounded-xl border border-primary/30 text-primary font-bold flex items-center justify-center gap-2 text-sm hover:bg-primary/5 transition-all">
                                     <span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
                                     PDF Download
                                 </button>
-                                -->
+
                             </div>
                         </form>
 
@@ -148,29 +152,30 @@
                         <div class="flex items-center justify-between mb-4 px-6 no-print">
                             <div class="flex items-center gap-3">
                                 <div class="w-2 h-8 bg-primary rounded-full"></div>
-                                <h3 class="text-xl font-black text-slate-800 gujarati-text tracking-tight">લાઇવ પ્રિવ્યુ (Live Letter Preview)</h3>
+                                <h3 class="text-xl font-black text-slate-800 gujarati-text tracking-tight">લાઇવ પ્રિવ્યુ
+                                    (Live Letter Preview)</h3>
                             </div>
-                            <div class="flex items-center gap-2 px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-black uppercase tracking-widest animate-pulse">
+                            <div
+                                class="flex items-center gap-2 px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-black uppercase tracking-widest animate-pulse">
                                 <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
                                 Premium View
                             </div>
                         </div>
 
                         <!-- The "Tabletop" Container -->
-                        <div class="bg-slate-500/90 backdrop-blur-sm rounded-[3rem] p-4 md:p-12 shadow-inner border-[6px] border-white/50 relative overflow-hidden print:bg-transparent print:p-0 print:border-none min-h-[1000px] flex justify-center">
-                            
+                        <div
+                            class="bg-slate-500/90 backdrop-blur-sm rounded-[3rem] p-4 md:p-12 shadow-inner border-[6px] border-white/50 relative overflow-hidden print:bg-transparent print:p-0 print:border-none min-h-[1000px] flex justify-center">
+
                             <!-- Subtle Paper Texture Overlay -->
-                            <div class="absolute inset-0 opacity-[0.05] pointer-events-none" style="background-image: url('https://www.transparenttextures.com/patterns/natural-paper.png');"></div>
+                            <div class="absolute inset-0 opacity-[0.05] pointer-events-none"
+                                style="background-image: url('https://www.transparenttextures.com/patterns/natural-paper.png');">
+                            </div>
 
                             <!-- The "Paper" -->
                             <div class="printable-bill transition-all duration-500 ease-in-out bg-white shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] ring-1 ring-black/5 origin-top scale-[0.6] sm:scale-[0.7] md:scale-[0.8] lg:scale-[0.95] xl:scale-100 print:scale-100 print:shadow-none print:ring-0 print:border-none"
                                 id="capture-area">
                                 <div id="print-area">
-                                    @if(isset($isPdf) && $isPdf)
-                                        @include('invoices.template')
-                                    @else
-                                        @include('invoices.print_template')
-                                    @endif
+                                    @include('invoices.print_template')
                                 </div>
                             </div>
 

@@ -36,9 +36,21 @@ function gujaratiAmountInWords($number) {
 }
 @endphp
 <style>
+    @font-face {
+        font-family: 'NotoSansGujarati';
+        src: url('{{ public_path('fonts/NotoSansGujarati-Regular.ttf') }}') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+    }
+    @font-face {
+        font-family: 'NotoSansGujarati';
+        src: url('{{ public_path('fonts/NotoSansGujarati-Bold.ttf') }}') format('truetype');
+        font-weight: bold;
+        font-style: normal;
+    }
     /* Base Reset for Print */
     .invoice-wrapper {
-        font-family: 'Inter', 'Roboto', 'DejaVu Sans', sans-serif;
+        font-family: 'NotoSansGujarati', 'DejaVu Sans', sans-serif;
         background: #fff;
         margin: 0 auto;
         color: #000;

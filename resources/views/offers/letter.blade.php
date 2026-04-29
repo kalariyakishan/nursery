@@ -1,5 +1,17 @@
 <style>
-    .offer-wrap { font-family: 'DejaVu Sans', Arial, sans-serif; color: #111; background: #fff; max-width: 210mm; margin: 0 auto; padding: 12mm; }
+    @font-face {
+        font-family: 'NotoSansGujarati';
+        src: url('{{ public_path('fonts/NotoSansGujarati-Regular.ttf') }}') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+    }
+    @font-face {
+        font-family: 'NotoSansGujarati';
+        src: url('{{ public_path('fonts/NotoSansGujarati-Bold.ttf') }}') format('truetype');
+        font-weight: bold;
+        font-style: normal;
+    }
+    .offer-wrap { font-family: 'NotoSansGujarati', 'DejaVu Sans', sans-serif; color: #111; background: #fff; max-width: 210mm; margin: 0 auto; padding: 12mm; }
     .offer-head { border-bottom: 2px solid rgba(22, 101, 52, 0.2); padding-bottom: 12px; margin-bottom: 14px; }
     .company-title {
         font-family: 'Times New Roman', serif;
