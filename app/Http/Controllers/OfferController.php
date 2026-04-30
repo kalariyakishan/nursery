@@ -93,6 +93,9 @@ class OfferController extends Controller
             'total' => 'required|numeric|min:0',
             'terms' => 'nullable|string',
             'show_total' => 'nullable|boolean',
+            'show_type' => 'nullable|boolean',
+            'show_size' => 'nullable|boolean',
+            'show_bag' => 'nullable|boolean',
         ]);
 
         DB::beginTransaction();
@@ -110,6 +113,9 @@ class OfferController extends Controller
                 'total' => $request->total,
                 'terms' => $request->terms,
                 'show_total' => $request->boolean('show_total', true),
+                'show_type' => $request->boolean('show_type', true),
+                'show_size' => $request->boolean('show_size', true),
+                'show_bag' => $request->boolean('show_bag', true),
             ];
 
             if ($request->filled('offer_date')) {

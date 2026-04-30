@@ -167,16 +167,19 @@
                     <tr>
                         <th style="width: 8%; text-align: center;">Sr No</th>
                         <th>Plant Name</th>
-                        <th>Type of plant</th>
-                        <th style="text-align: center;">Plant Size Feet</th>
-                        <th style="text-align: center;">Bag Size inches</th>
+                        @if($offer->show_type)<th>Type of plant</th>@endif
+                        @if($offer->show_size)<th style="text-align: center;">Plant Size Feet</th>@endif
+                        @if($offer->show_bag)<th style="text-align: center;">Bag Size inches</th>@endif
                         <th class="amount">Rate (Rs)</th>
                     </tr>
                 </thead>
                 <tbody>
                     @if($page_index > 0 && $offer->show_total)
+                        @php
+                            $col_count = 3 + ($offer->show_type?1:0) + ($offer->show_size?1:0) + ($offer->show_bag?1:0);
+                        @endphp
                         <tr style="background: #f9fafb;">
-                            <td colspan="5" style="text-align: right; font-style: italic; color: #666;">Brought Forward (B/F)</td>
+                            <td colspan="{{ $col_count - 1 }}" style="text-align: right; font-style: italic; color: #666;">Brought Forward (B/F)</td>
                             <td class="amount">₹{{ number_format($running_total, 2) }}</td>
                         </tr>
                     @endif
@@ -191,16 +194,19 @@
                         <tr>
                             <td style="text-align: center;">{{ $display_idx }}</td>
                             <td>{{ $item->plant_name }}</td>
-                            <td>{{ $item->type_of_plant ?: '-' }}</td>
-                            <td style="text-align: center;">{{ $item->plant_size_feet ?: '-' }}</td>
-                            <td style="text-align: center;">{{ $item->bag_size_inches ?: '-' }}</td>
+                            @if($offer->show_type)<td>{{ $item->type_of_plant ?: '-' }}</td>@endif
+                            @if($offer->show_size)<td style="text-align: center;">{{ $item->plant_size_feet ?: '-' }}</td>@endif
+                            @if($offer->show_bag)<td style="text-align: center;">{{ $item->bag_size_inches ?: '-' }}</td>@endif
                             <td class="amount">{{ number_format($item->rate, 2) }}</td>
                         </tr>
                     @endforeach
 
                     @if($page_index < $page_count - 1 && $offer->show_total)
+                        @php
+                            $col_count = 3 + ($offer->show_type?1:0) + ($offer->show_size?1:0) + ($offer->show_bag?1:0);
+                        @endphp
                         <tr style="background: #f9fafb;">
-                            <td colspan="5" style="text-align: right; font-style: italic; color: #666;">Carried Forward (C/F)</td>
+                            <td colspan="{{ $col_count - 1 }}" style="text-align: right; font-style: italic; color: #666;">Carried Forward (C/F)</td>
                             <td class="amount">₹{{ number_format($running_total, 2) }}</td>
                         </tr>
                     @endif

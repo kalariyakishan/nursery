@@ -135,15 +135,19 @@
                                     <tr class="bg-[#f2f2f2] text-[10px] uppercase font-bold text-[#374151] tracking-[0.05em]">
                                         <th class="border border-[#94a3b8] p-2 text-center w-10">Sr</th>
                                         <th class="border border-[#94a3b8] p-2 text-left">Description of Plants</th>
-                                        <th class="border border-[#94a3b8] p-2 text-center">Type</th>
-                                        <th class="border border-[#94a3b8] p-2 text-center">Size</th>
+                                        @if($offer->show_type)<th class="border border-[#94a3b8] p-2 text-center">Type</th>@endif
+                                        @if($offer->show_size)<th class="border border-[#94a3b8] p-2 text-center">Size (Ft)</th>@endif
+                                        @if($offer->show_bag)<th class="border border-[#94a3b8] p-2 text-center">Bag (In)</th>@endif
                                         <th class="border border-[#94a3b8] p-2 text-right">Rate (₹)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @if($pageIdx > 0 && $offer->show_total)
+                                        @php
+                                            $col_count = 3 + ($offer->show_type?1:0) + ($offer->show_size?1:0) + ($offer->show_bag?1:0);
+                                        @endphp
                                         <tr class="bg-[#f8fafc] italic text-[12px] text-[#4b5563] font-semibold border-b-2 border-dashed border-[#cbd5e1]">
-                                            <td colspan="4" class="p-1.5 text-right uppercase tracking-tighter">Brought Forward (B/F)</td>
+                                            <td colspan="{{ $col_count - 1 }}" class="p-1.5 text-right uppercase tracking-tighter">Brought Forward (B/F)</td>
                                             <td class="p-1.5 text-right font-bold text-[#111827]">₹{{ number_format($running_total, 2) }}</td>
                                         </tr>
                                     @endif
@@ -157,20 +161,19 @@
                                             <td class="border border-gray-200 p-2">
                                                 <div class="text-[13px] font-bold text-[#111827]">{{ $item->plant_name ?: '-' }}</div>
                                             </td>
-                                            <td class="border border-gray-200 p-2 text-center">{{ $item->type_of_plant ?: '-' }}</td>
-                                            <td class="border border-gray-200 p-2 text-center">
-                                                @if($item->plant_size_feet) {{ $item->plant_size_feet }}ft @endif
-                                                @if($item->plant_size_feet && $item->bag_size_inches) / @endif
-                                                @if($item->bag_size_inches) {{ $item->bag_size_inches }}in @endif
-                                                @if(!$item->plant_size_feet && !$item->bag_size_inches) - @endif
-                                            </td>
+                                            @if($offer->show_type)<td class="border border-gray-200 p-2 text-center">{{ $item->type_of_plant ?: '-' }}</td>@endif
+                                            @if($offer->show_size)<td class="border border-gray-200 p-2 text-center">{{ $item->plant_size_feet ?: '-' }}</td>@endif
+                                            @if($offer->show_bag)<td class="border border-gray-200 p-2 text-center">{{ $item->bag_size_inches ?: '-' }}</td>@endif
                                             <td class="border border-gray-200 p-2 text-right font-bold">₹ {{ number_format($item->rate, 2) }}</td>
                                         </tr>
                                     @endforeach
 
                                     @if($pageIdx < $page_count - 1 && $offer->show_total)
+                                        @php
+                                            $col_count = 3 + ($offer->show_type?1:0) + ($offer->show_size?1:0) + ($offer->show_bag?1:0);
+                                        @endphp
                                         <tr class="bg-[#f8fafc] italic text-[12px] text-[#4b5563] font-semibold border-b-2 border-dashed border-[#cbd5e1]">
-                                            <td colspan="4" class="p-1.5 text-right uppercase tracking-tighter">Carried Forward (C/F)</td>
+                                            <td colspan="{{ $col_count - 1 }}" class="p-1.5 text-right uppercase tracking-tighter">Carried Forward (C/F)</td>
                                             <td class="p-1.5 text-right font-bold text-[#111827]">₹{{ number_format($running_total, 2) }}</td>
                                         </tr>
                                     @endif
@@ -189,18 +192,26 @@
                                         $empty_rows = $fill_limit - $rowCount;
                                     @endphp
                                     @if($empty_rows > 0)
+                                        @php
+                                            $col_count = 3 + ($offer->show_type?1:0) + ($offer->show_size?1:0) + ($offer->show_bag?1:0);
+                                        @endphp
                                         @for($i = 0; $i < $empty_rows; $i++)
                                             <tr class="h-7 border-b border-gray-100">
-                                                <td class="border-x border-gray-200 p-2"></td><td class="border-x border-gray-200 p-2"></td><td class="border-x border-gray-200 p-2"></td><td class="border-x border-gray-200 p-2"></td><td class="border-x border-gray-200 p-2"></td>
+                                                @for($j = 0; $j < $col_count; $j++)
+                                                    <td class="border-x border-gray-200 p-2"></td>
+                                                @endfor
                                             </tr>
                                         @endfor
                                     @endif
                                 </tbody>
                                 
                                 @if($pageIdx === $page_count - 1 && $offer->show_total)
+                                    @php
+                                        $col_count = 3 + ($offer->show_type?1:0) + ($offer->show_size?1:0) + ($offer->show_bag?1:0);
+                                    @endphp
                                     <tfoot>
                                         <tr class="bg-gray-50 border-t-2 border-b-2 border-[#111827]">
-                                            <td colspan="4" class="p-2 text-right uppercase tracking-widest text-[15px] font-black text-[#000]">Grand Total</td>
+                                            <td colspan="{{ $col_count - 1 }}" class="p-2 text-right uppercase tracking-widest text-[15px] font-black text-[#000]">Grand Total</td>
                                             <td class="p-2 text-right text-[#000] font-black text-[18px]">₹{{ number_format($offer->total, 2) }}</td>
                                         </tr>
                                     </tfoot>

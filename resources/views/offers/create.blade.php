@@ -147,19 +147,15 @@
                                 </div>
                                 <h3 class="font-bold text-xl text-text-primary tracking-tight">Offer Items</h3>
                             </div>
-                            <button type="button" @click="addItem()"
-                                class="px-5 py-2.5 bg-primary text-white rounded-xl font-bold flex items-center gap-2 hover:shadow-lg hover:shadow-primary/20 transition-all active:scale-95">
-                                <span class="material-symbols-outlined text-[20px]">add</span>Add New Item
-                            </button>
                         </div>
 
                         <div class="p-4 space-y-4">
                             <!-- TABLE HEADER (Desktop) -->
                             <div
                                 class="hidden md:grid grid-cols-12 gap-3 px-4 py-2 text-[10px] uppercase tracking-widest font-black text-text-secondary opacity-50">
-                                <div class="col-span-4">Product / Plant Details</div>
-                                <div class="col-span-2">Type</div>
-                                <div class="col-span-2">Size (Ft/In)</div>
+                                <div :class="(showType && (showSize || showBag)) ? 'col-span-4' : ((!showType && !(showSize || showBag)) ? 'col-span-8' : 'col-span-6')">Product / Plant Details</div>
+                                <div x-show="showType" class="col-span-2">Type</div>
+                                <div x-show="showSize || showBag" class="col-span-2">Size (Ft/In)</div>
                                 <div class="col-span-2 text-right">Rate (₹)</div>
                                 <div class="col-span-2"></div>
                             </div>
@@ -170,7 +166,7 @@
                                         class="group relative bg-background/30 rounded-2xl p-4 md:p-2 border border-transparent hover:border-primary/20 hover:bg-white hover:shadow-xl transition-all duration-300">
                                         <div class="grid grid-cols-12 gap-3 items-center">
                                             <!-- Product Selection & Name -->
-                                            <div class="col-span-12 md:col-span-4 space-y-2">
+                                            <div :class="(showType && (showSize || showBag)) ? 'col-span-12 md:col-span-4 space-y-2' : ((!showType && !(showSize || showBag)) ? 'col-span-12 md:col-span-8 space-y-2' : 'col-span-12 md:col-span-6 space-y-2')">
                                                 <select
                                                     class="block w-full h-10 px-3 rounded-xl border-border-light text-sm focus:ring-primary/10"
                                                     @change="updateProduct(index, $event.target.value)">
@@ -186,18 +182,19 @@
                                                     required>
                                             </div>
 
-                                            <!-- Type & Size -->
-                                            <div class="col-span-6 md:col-span-2">
+                                            <!-- Type -->
+                                            <div x-show="showType" class="col-span-6 md:col-span-2">
                                                 <input type="text" :name="'items['+index+'][type_of_plant]'"
                                                     x-model="item.type_of_plant" placeholder="Ex: Fruit"
                                                     class="block w-full h-10 px-3 rounded-xl border-border-light text-sm">
                                             </div>
-                                            <div class="col-span-6 md:col-span-2 flex gap-1">
-                                                <input type="text" :name="'items['+index+'][plant_size_feet]'"
+                                            <!-- Size -->
+                                            <div x-show="showSize || showBag" class="col-span-6 md:col-span-2 flex gap-1">
+                                                <input x-show="showSize" type="text" :name="'items['+index+'][plant_size_feet]'"
                                                     x-model="item.plant_size_feet" placeholder="Ht"
                                                     class="block w-full h-10 px-2 rounded-xl border-border-light text-xs text-center"
                                                     title="Height (Feet)">
-                                                <input type="text" :name="'items['+index+'][bag_size_inches]'"
+                                                <input x-show="showBag" type="text" :name="'items['+index+'][bag_size_inches]'"
                                                     x-model="item.bag_size_inches" placeholder="Bag"
                                                     class="block w-full h-10 px-2 rounded-xl border-border-light text-xs text-center"
                                                     title="Bag Size (Inches)">
@@ -229,6 +226,16 @@
                                     </div>
                                 </template>
                             </div>
+
+                            <div class="px-4 pb-4">
+                                <button type="button" @click="addItem()"
+                                    class="w-full py-4 bg-white border-2 border-dashed border-primary/20 text-primary rounded-2xl font-black flex items-center justify-center gap-3 hover:border-primary hover:bg-primary/5 transition-all active:scale-95 group shadow-sm">
+                                    <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
+                                        <span class="material-symbols-outlined text-[20px]">add</span>
+                                    </div>
+                                    Add New Plant Item
+                                </button>
+                            </div>
                         </div>
 
                         <div class="p-8 bg-background/30 border-t border-border-light/50 space-y-6">
@@ -237,21 +244,38 @@
                                     <label
                                         class="text-[10px] uppercase tracking-wider font-black text-primary mb-1 block opacity-70 group-focus-within:opacity-100 transition-opacity">Terms
                                         & Conditions</label>
-                                    <textarea name="terms" x-model="terms" rows="4"
-                                        class="input-field border-transparent bg-white shadow-sm focus:border-primary h-auto py-3 text-sm"
+                                    <textarea name="terms" x-model="terms" rows="12"
+                                        class="input-field border-transparent bg-white shadow-sm focus:border-primary h-auto py-4 text-sm leading-relaxed"
                                         placeholder="Terms..."></textarea>
                                 </div>
-                                <div
-                                    class="flex items-center gap-3 p-3 bg-white rounded-xl border border-primary/10 shadow-sm w-fit">
-                                    <input type="checkbox" name="show_total" x-model="showTotal"
-                                        :value="showTotal ? 1 : 0"
-                                        class="w-5 h-5 rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500">
-                                    <div class="flex flex-col pr-4">
-                                        <span class="text-xs font-black text-emerald-900 leading-none">Show Grand
-                                            Total</span>
-                                        <span
-                                            class="text-[9px] text-emerald-600/60 font-bold tracking-tight">Display
-                                            final amount on letter</span>
+                                <div class="flex flex-wrap gap-4">
+                                    <div class="flex items-center gap-3 p-3 bg-white rounded-xl border border-primary/10 shadow-sm w-fit">
+                                        <input type="checkbox" name="show_total" x-model="showTotal" :value="showTotal ? 1 : 0"
+                                            class="w-5 h-5 rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500">
+                                        <div class="flex flex-col pr-4">
+                                            <span class="text-xs font-black text-emerald-900 leading-none">Grand Total</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-3 p-3 bg-white rounded-xl border border-primary/10 shadow-sm w-fit">
+                                        <input type="checkbox" name="show_type" x-model="showType" :value="showType ? 1 : 0"
+                                            class="w-5 h-5 rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500">
+                                        <div class="flex flex-col pr-4">
+                                            <span class="text-xs font-black text-emerald-900 leading-none">Show Type</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-3 p-3 bg-white rounded-xl border border-primary/10 shadow-sm w-fit">
+                                        <input type="checkbox" name="show_size" x-model="showSize" :value="showSize ? 1 : 0"
+                                            class="w-5 h-5 rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500">
+                                        <div class="flex flex-col pr-4">
+                                            <span class="text-xs font-black text-emerald-900 leading-none">Show Size (Ft)</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-3 p-3 bg-white rounded-xl border border-primary/10 shadow-sm w-fit">
+                                        <input type="checkbox" name="show_bag" x-model="showBag" :value="showBag ? 1 : 0"
+                                            class="w-5 h-5 rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500">
+                                        <div class="flex flex-col pr-4">
+                                            <span class="text-xs font-black text-emerald-900 leading-none">Show Bag (In)</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -364,8 +388,9 @@
                                                         <th class="border border-[#94a3b8] p-2 text-center w-10">Sr</th>
                                                         <th class="border border-[#94a3b8] p-2 text-left">Description of
                                                             Plants</th>
-                                                        <th class="border border-[#94a3b8] p-2 text-center">Type</th>
-                                                        <th class="border border-[#94a3b8] p-2 text-center">Size</th>
+                                                        <th x-show="showType" class="border border-[#94a3b8] p-2 text-center">Type</th>
+                                                        <th x-show="showSize" class="border border-[#94a3b8] p-2 text-center">Size (Ft)</th>
+                                                        <th x-show="showBag" class="border border-[#94a3b8] p-2 text-center">Bag (In)</th>
                                                         <th class="border border-[#94a3b8] p-2 text-right">Rate (₹)</th>
                                                     </tr>
                                                 </thead>
@@ -373,7 +398,7 @@
                                                     <!-- Brought Forward Row -->
                                                     <template x-if="pageIdx > 0 && showTotal">
                                                         <tr class="bg-[#f8fafc] italic text-[12px] text-[#4b5563] font-semibold border-b-2 border-dashed border-[#cbd5e1]">
-                                                            <td colspan="4"
+                                                            <td :colspan="(3 + (showType?1:0) + (showSize?1:0) + (showBag?1:0)) - 1"
                                                                 class="p-1.5 text-right uppercase tracking-tighter">
                                                                 Brought Forward (B/F)</td>
                                                             <td class="p-1.5 text-right font-bold text-[#111827]"
@@ -389,19 +414,12 @@
                                                             <td class="border border-gray-200 p-2">
                                                                 <div class="text-[13px] font-bold text-[#111827]" x-text="item.plant_name || '-'"></div>
                                                             </td>
-                                                            <td class="border border-gray-200 p-2 text-center"
+                                                            <td x-show="showType" class="border border-gray-200 p-2 text-center"
                                                                 x-text="item.type_of_plant || '-'"></td>
-                                                            <td class="border border-gray-200 p-2 text-center">
-                                                                <span
-                                                                    x-text="item.plant_size_feet ? item.plant_size_feet + 'ft' : ''"></span>
-                                                                <span
-                                                                    x-show="item.plant_size_feet && item.bag_size_inches">
-                                                                    / </span>
-                                                                <span
-                                                                    x-text="item.bag_size_inches ? item.bag_size_inches + 'in' : ''"></span>
-                                                                <span
-                                                                    x-show="!item.plant_size_feet && !item.bag_size_inches">-</span>
-                                                            </td>
+                                                            <td x-show="showSize" class="border border-gray-200 p-2 text-center"
+                                                                x-text="item.plant_size_feet || '-'"></td>
+                                                            <td x-show="showBag" class="border border-gray-200 p-2 text-center"
+                                                                x-text="item.bag_size_inches || '-'"></td>
                                                             <td class="border border-gray-200 p-2 text-right font-bold"
                                                                 x-text="'₹ ' + Number(item.rate || 0).toLocaleString(undefined, {minimumFractionDigits: 2})">
                                                             </td>
@@ -411,7 +429,7 @@
                                                     <!-- Carried Forward Row -->
                                                     <template x-if="pageIdx < pagedItems.length - 1 && showTotal">
                                                         <tr class="bg-[#f8fafc] italic text-[12px] text-[#4b5563] font-semibold border-b-2 border-dashed border-[#cbd5e1]">
-                                                            <td colspan="4"
+                                                            <td :colspan="(3 + (showType?1:0) + (showSize?1:0) + (showBag?1:0)) - 1"
                                                                 class="p-1.5 text-right uppercase tracking-tighter">
                                                                 Carried Forward (C/F)</td>
                                                             <td class="p-1.5 text-right font-bold text-[#111827]"
@@ -426,8 +444,9 @@
                                                             <tr class="h-7 border-b border-gray-100">
                                                                 <td class="border-x border-gray-200 p-2"></td>
                                                                 <td class="border-x border-gray-200 p-2"></td>
-                                                                <td class="border-x border-gray-200 p-2"></td>
-                                                                <td class="border-x border-gray-200 p-2"></td>
+                                                                <template x-if="showType"><td class="border-x border-gray-200 p-2"></td></template>
+                                                                <template x-if="showSize"><td class="border-x border-gray-200 p-2"></td></template>
+                                                                <template x-if="showBag"><td class="border-x border-gray-200 p-2"></td></template>
                                                                 <td class="border-x border-gray-200 p-2"></td>
                                                             </tr>
                                                         </template>
@@ -437,7 +456,7 @@
                                                 <template x-if="pageIdx === pagedItems.length - 1 && showTotal">
                                                     <tfoot>
                                                         <tr class="bg-gray-50 border-t-2 border-b-2 border-[#111827]">
-                                                            <td colspan="4"
+                                                            <td :colspan="(3 + (showType?1:0) + (showSize?1:0) + (showBag?1:0)) - 1"
                                                                 class="p-2 text-right uppercase tracking-widest text-[15px] font-black text-[#000]">
                                                                 Grand Total</td>
                                                             <td class="p-2 text-right text-[#000] font-black text-[18px]"
@@ -532,7 +551,10 @@
                 customerName: {!! json_encode(old('customer_name', '')) !!},
                 phone: {!! json_encode(old('phone', '')) !!},
                 address: {!! json_encode(old('address', '')) !!},
-                showTotal: @json(old('show_total', true)),
+                showTotal: @json(old('show_total', false)),
+                showType: @json(old('show_type', false)),
+                showSize: @json(old('show_size', true)),
+                showBag: @json(old('show_bag', true)),
                 terms: {!! json_encode(old('terms', "આ ભાવ ટ્રાન્સપોર્ટેશન સાથે ના છે.\nસાવરકુંડલા, ખાંભા, વિસાવદર, બગસરા અને કુંકાવાવ લોકેશન થી 20 કિલોમીટર સુધી ના ભાવ છે વધારે કિલોમીટર થશે તો વધારાનું ભાડું આપવાનું રહેશે.\nલોડિંગ કરી આપવામાં આવશે.\n20 (વીસ) દિવસ માં પેમેન્ટ કરવાનું રહેશે.(માલ મળ્યા બાદ)\nઓર્ડર મળ્યા બાદ 10 દિવસ માં માલ પહોંચતો કરવામાં આવશે.\nઅનલોડિંગ પાર્ટી એ કરવાનું રહેશે.\nઆ ભાવ જીએસટી વગર ના છે.\nઆ ભાવ એક વર્ષ સુધીના આપવામાં આવેલ છે.\nઓછામાં ઓછા 2000 (બે હજાર)નો ઓર્ડર હશે તો લોકેશન સુધી ડિલવરી કરવામાં આવશે.")) !!},
                 discount: Number({!! json_encode(old('discount', 0)) !!}),
                 items: [],

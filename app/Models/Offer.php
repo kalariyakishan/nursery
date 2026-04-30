@@ -23,6 +23,9 @@ class Offer extends Model
         'total',
         'terms',
         'show_total',
+        'show_type',
+        'show_size',
+        'show_bag',
         'created_at',
     ];
 
