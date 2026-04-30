@@ -112,10 +112,10 @@ class OfferController extends Controller
                 'discount' => $request->discount ?? 0,
                 'total' => $request->total,
                 'terms' => $request->terms,
-                'show_total' => $request->boolean('show_total', true),
-                'show_type' => $request->boolean('show_type', true),
-                'show_size' => $request->boolean('show_size', true),
-                'show_bag' => $request->boolean('show_bag', true),
+                'show_total' => $request->boolean('show_total'),
+                'show_type' => $request->boolean('show_type'),
+                'show_size' => $request->boolean('show_size'),
+                'show_bag' => $request->boolean('show_bag'),
             ];
 
             if ($request->filled('offer_date')) {
@@ -152,6 +152,93 @@ class OfferController extends Controller
     {
         $offer->load('items');
         return view('offers.show', compact('offer'));
+    }
+
+    public function edit(Offer $offer)
+    {
+        $offer->load('items');
+        $products = Product::with('variants')->get();
+        return view('offers.edit', compact('offer', 'products'));
+    }
+
+    public function update(Request $request, Offer $offer)
+    {
+        $request->validate([
+            'customer_name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:30',
+            'address' => 'nullable|string',
+            'reference_no' => 'nullable|string|max:255',
+            'subject' => 'nullable|string|max:255',
+            'greeting' => 'nullable|string|max:255',
+            'intro_text' => 'nullable|string',
+            'offer_date' => 'nullable|date',
+            'items' => 'required|array|min:1',
+            'items.*.plant_name' => 'required|string|max:255',
+            'items.*.type_of_plant' => 'nullable|string|max:255',
+            'items.*.plant_size_feet' => 'nullable|string|max:255',
+            'items.*.bag_size_inches' => 'nullable|string|max:255',
+            'items.*.variant' => 'nullable|string|max:255',
+            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.rate' => 'required|numeric|min:0',
+            'subtotal' => 'required|numeric|min:0',
+            'discount' => 'nullable|numeric|min:0',
+            'total' => 'required|numeric|min:0',
+            'terms' => 'nullable|string',
+            'show_total' => 'nullable|boolean',
+            'show_type' => 'nullable|boolean',
+            'show_size' => 'nullable|boolean',
+            'show_bag' => 'nullable|boolean',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $offerData = [
+                'customer_name' => $request->customer_name,
+                'phone' => $request->phone,
+                'address' => $request->address,
+                'reference_no' => $request->reference_no,
+                'subject' => $request->subject,
+                'greeting' => $request->greeting,
+                'intro_text' => $request->intro_text,
+                'subtotal' => $request->subtotal,
+                'discount' => $request->discount ?? 0,
+                'total' => $request->total,
+                'terms' => $request->terms,
+                'show_total' => $request->boolean('show_total'),
+                'show_type' => $request->boolean('show_type'),
+                'show_size' => $request->boolean('show_size'),
+                'show_bag' => $request->boolean('show_bag'),
+            ];
+
+            if ($request->filled('offer_date')) {
+                $offerData['created_at'] = $request->offer_date . ' ' . $offer->created_at->format('H:i:s');
+            }
+
+            $offer->update($offerData);
+
+            $offer->items()->delete();
+            foreach ($request->items as $item) {
+                $quantity = (int) $item['quantity'];
+                $rate = (float) $item['rate'];
+
+                $offer->items()->create([
+                    'plant_name' => $item['plant_name'],
+                    'type_of_plant' => $item['type_of_plant'] ?? null,
+                    'plant_size_feet' => $item['plant_size_feet'] ?? null,
+                    'bag_size_inches' => $item['bag_size_inches'] ?? null,
+                    'variant' => $item['variant'] ?? null,
+                    'quantity' => $quantity,
+                    'rate' => $rate,
+                    'total' => $quantity * $rate,
+                ]);
+            }
+
+            DB::commit();
+            return redirect()->route('offers.show', $offer)->with('success', 'Offer updated successfully.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return back()->withInput()->with('error', 'Failed to update offer: ' . $e->getMessage());
+        }
     }
 
     public function pdf(Offer $offer)

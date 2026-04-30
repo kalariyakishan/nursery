@@ -39,7 +39,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('offers/data', [OfferController::class, 'getData'])->name('offers.data');
     Route::get('offers/{offer}/pdf', [OfferController::class, 'pdf'])->name('offers.pdf');
-    Route::resource('offers', OfferController::class)->except(['edit', 'update']);
+    Route::resource('offers', OfferController::class);
 
     Route::get('settings', [App\Http\Controllers\SettingController::class, 'index'])->name('settings.index');
     Route::post('settings', [App\Http\Controllers\SettingController::class, 'update'])->name('settings.update');
