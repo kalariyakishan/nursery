@@ -3,27 +3,26 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>New Vrundavan Nursery | Premium Plants in Gadu, Gujarat 🌱</title>
+    <title>NEW VRUNDAVAN NURSERY | Luxury Botanical Experience</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <style>
         :root {
-            --primary: #1B5E20; /* Matching Invoice Green */
-            --primary-light: #4CAF50;
-            --primary-dark: #0D3D0F;
-            --background: #F6FBF6;
-            --surface: #FFFFFF;
-            --text-primary: #1A1A1A;
-            --text-secondary: #6B7280;
-            --accent: #E8F5E9;
-            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            --forest-green: #0D2B1D;
+            --earthy-sage: #8B9D83;
+            --brushed-gold: #C5A059;
+            --warm-copper: #B87333;
+            --off-white: #FDFBF7;
+            --dark-green: #051A10;
+            --transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            --gold-leaf: linear-gradient(135deg, #C5A059 0%, #F5E0A3 50%, #C5A059 100%);
         }
 
         * {
@@ -34,92 +33,98 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--background);
-            color: var(--text-primary);
+            background-color: var(--off-white);
+            color: var(--forest-green);
             line-height: 1.6;
             overflow-x: hidden;
         }
 
-        h1, h2, h3, h4, .font-poppins {
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .nursery-title {
-            font-family: 'Times New Roman', serif;
-            letter-spacing: -0.02em;
+        h1, h2, h3, h4, .serif {
+            font-family: 'Cormorant Garamond', serif;
         }
 
         /* --- Custom Scrollbar --- */
-        ::-webkit-scrollbar { width: 10px; }
-        ::-webkit-scrollbar-track { background: var(--background); }
-        ::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 5px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--off-white); }
+        ::-webkit-scrollbar-thumb { background: var(--brushed-gold); }
+
+        /* --- Utility Classes --- */
+        .gold-text {
+            background: var(--gold-leaf);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+
+        .gold-leaf-flourish {
+            position: relative;
+            display: inline-block;
+        }
+
+        .gold-leaf-flourish::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 2px;
+            background: var(--gold-leaf);
+        }
 
         /* --- Navigation --- */
-        .navbar {
+        nav {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            padding: 1.25rem 5%;
+            padding: 2rem 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 1000;
             transition: var(--transition);
-            background: transparent;
         }
 
-        .navbar.scrolled {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(12px);
-            padding: 0.8rem 5%;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
-            border-bottom: 1px solid rgba(27, 94, 32, 0.1);
+        nav.scrolled {
+            padding: 1rem 5%;
+            background: rgba(253, 251, 247, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
         }
 
         .logo {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 1rem;
             text-decoration: none;
-            color: var(--primary);
+            color: var(--forest-green);
         }
+
+        .logo i { color: var(--brushed-gold); }
 
         .logo-text {
-            font-size: 1.4rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            line-height: 1;
-        }
-
-        .logo-tagline {
-            display: block;
-            font-size: 0.6rem;
-            font-weight: 600;
+            font-size: 1.5rem;
+            font-weight: 700;
             letter-spacing: 0.1em;
-            color: var(--text-secondary);
+            text-transform: uppercase;
         }
 
         .nav-links {
             display: flex;
-            gap: 2.25rem;
+            gap: 3rem;
             list-style: none;
         }
 
         .nav-link {
             text-decoration: none;
-            color: var(--text-primary);
-            font-weight: 500;
-            font-size: 0.9rem;
+            color: var(--forest-green);
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
             transition: var(--transition);
             position: relative;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .nav-link:hover, .nav-link.active {
-            color: var(--primary);
         }
 
         .nav-link::after {
@@ -128,62 +133,22 @@
             bottom: -5px;
             left: 0;
             width: 0;
-            height: 2px;
-            background: var(--primary);
+            height: 1px;
+            background: var(--brushed-gold);
             transition: var(--transition);
         }
 
-        .nav-link:hover::after {
-            width: 100%;
-        }
-
-        .nav-text-link {
-            text-decoration: none;
-            color: var(--text-primary);
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: var(--transition);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .nav-text-link:hover {
-            color: var(--primary);
-        }
-
-        .mr-4 {
-            margin-right: 1.5rem;
-        }
-
-        .nav-cta {
-            background: var(--primary);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: var(--transition);
-            box-shadow: 0 4px 15px rgba(27, 94, 32, 0.2);
-        }
-
-        .nav-cta:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(27, 94, 32, 0.3);
-        }
+        .nav-link:hover::after { width: 100%; }
+        .nav-link:hover { color: var(--brushed-gold); }
 
         /* --- Hero Section --- */
         .hero {
             height: 100vh;
-            min-height: 700px;
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            text-align: center;
-            color: white;
-            padding: 0 5%;
+            overflow: hidden;
         }
 
         .hero-bg {
@@ -192,566 +157,501 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url('{{ asset('nursery_panoramic_view_1775272065443.png') }}');
-            background-size: cover;
-            background-position: center;
+            background: url('/images/redesign/hero.png') center/cover no-repeat;
+            transform: scale(1.1);
+            animation: zoomOut 20s infinite alternate;
             z-index: -1;
-            transition: transform 10s linear;
         }
 
-        .hero:hover .hero-bg {
-            transform: scale(1.1);
+        @keyframes zoomOut {
+            from { transform: scale(1.1); }
+            to { transform: scale(1); }
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(13, 43, 29, 0.2) 0%, rgba(13, 43, 29, 0.6) 100%);
         }
 
         .hero-content {
-            max-width: 900px;
+            text-align: center;
+            color: white;
             z-index: 10;
+            max-width: 1000px;
+            padding: 0 5%;
         }
 
         .hero h1 {
-            font-size: clamp(3rem, 8vw, 5.5rem);
-            font-weight: 900;
-            line-height: 0.95;
-            margin-bottom: 1.5rem;
-            text-transform: uppercase;
-        }
-
-        .hero p {
-            font-size: clamp(1.1rem, 2vw, 1.4rem);
-            margin-bottom: 3rem;
-            font-weight: 400;
-            opacity: 0.95;
-            max-width: 700px;
-            margin-inline: auto;
-        }
-
-        .hero-btns {
-            display: flex;
-            gap: 1.5rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 1.1rem 2.8rem;
-            border-radius: 50px;
-            font-weight: 700;
-            text-decoration: none;
-            transition: var(--transition);
-            font-size: 1rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.75rem;
-            text-transform: uppercase;
+            font-size: clamp(3rem, 10vw, 6rem);
+            font-weight: 300;
+            line-height: 1;
+            margin-bottom: 2rem;
             letter-spacing: 0.05em;
+            text-transform: uppercase;
         }
 
-        .btn-fill {
-            background: var(--primary);
-            color: white;
-            border: 2px solid var(--primary);
+        .hero h1 span {
+            display: block;
+            font-style: italic;
+            font-size: 0.5em;
+            letter-spacing: 0.3em;
+            margin-bottom: 0.5rem;
+            opacity: 0.8;
         }
 
-        .btn-fill:hover {
-            background: var(--primary-dark);
-            border-color: var(--primary-dark);
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(27, 94, 32, 0.4);
+        .hero-cta {
+            margin-top: 3rem;
         }
 
-        .btn-outline {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: 2px solid white;
-            backdrop-filter: blur(5px);
-        }
-
-        .btn-outline:hover {
-            background: white;
-            color: var(--primary);
-            transform: translateY(-5px);
-        }
-
-        /* --- Sections General --- */
-        section {
-            padding: 7rem 10% ;
-        }
-
-        .section-header {
-            text-align: center;
-            max-width: 800px;
-            margin: 0 auto 5rem;
-        }
-
-        .section-header span {
-            color: var(--primary);
-            font-weight: 800;
+        .btn-gold {
+            background: var(--gold-leaf);
+            color: var(--dark-green);
+            padding: 1.2rem 3rem;
+            border-radius: 0;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1rem;
             text-transform: uppercase;
             letter-spacing: 0.2em;
-            font-size: 0.85rem;
-            display: block;
-            margin-bottom: 1rem;
+            transition: var(--transition);
+            display: inline-block;
+            border: 1px solid transparent;
         }
 
-        .section-header h2 {
-            font-size: 3rem;
-            color: var(--primary-dark);
-            font-weight: 800;
-            line-height: 1.2;
-        }
-
-        .section-header p {
-            margin-top: 1.5rem;
-            color: var(--text-secondary);
-            font-size: 1.15rem;
-        }
-
-        /* --- About Section --- */
-        .about {
-            display: grid;
-            grid-template-columns: 1.1fr 0.9fr;
-            gap: 6rem;
-            align-items: center;
-        }
-
-        .about-image-container {
-            position: relative;
-        }
-
-        .about-img {
-            width: 100%;
-            border-radius: 32px;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1);
-            z-index: 2;
-            position: relative;
-        }
-
-        .about-badge {
-            position: absolute;
-            bottom: -30px;
-            right: -30px;
-            background: var(--primary);
+        .btn-gold:hover {
+            background: transparent;
             color: white;
-            padding: 2.5rem;
-            border-radius: 24px;
-            text-align: center;
-            z-index: 3;
-            box-shadow: 0 20px 40px rgba(27, 94, 32, 0.3);
+            border-color: var(--brushed-gold);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(197, 160, 89, 0.3);
         }
 
-        .about-badge .years {
-            display: block;
-            font-size: 3rem;
-            font-weight: 900;
-            line-height: 1;
+        /* --- Sections --- */
+        section {
+            padding: 10rem 10%;
+            position: relative;
         }
 
-        .about-badge .text {
-            font-size: 0.9rem;
-            font-weight: 600;
+        .section-tag {
+            font-size: 0.8rem;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.4em;
+            color: var(--brushed-gold);
+            display: block;
+            margin-bottom: 2rem;
+            text-align: center;
         }
 
-        .about h2 {
-            font-size: 3.5rem;
-            margin-bottom: 2rem;
-            color: var(--primary-dark);
+        .section-title {
+            font-size: 4rem;
+            text-align: center;
+            margin-bottom: 5rem;
+            font-weight: 400;
             line-height: 1.1;
         }
 
-        .about p {
-            font-size: 1.15rem;
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
+        /* --- Narrative Section --- */
+        .narrative {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 8rem;
+            align-items: center;
         }
 
-        .check-list {
-            list-style: none;
+        .narrative-image {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.15);
+        }
+
+        .narrative-image img {
+            width: 100%;
+            display: block;
+            transition: var(--transition);
+        }
+
+        .narrative-image:hover img { transform: scale(1.05); }
+
+        .narrative-content h2 {
+            font-size: 3.5rem;
+            margin-bottom: 2rem;
+            line-height: 1.1;
+        }
+
+        .narrative-content p {
+            font-size: 1.2rem;
+            color: var(--earthy-sage);
+            margin-bottom: 3rem;
+            font-weight: 300;
+        }
+
+        .narrative-icons {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 1.25rem;
-        }
-
-        .check-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-weight: 600;
-            color: var(--primary-dark);
-        }
-
-        .check-item i {
-            color: var(--primary);
-            flex-shrink: 0;
-        }
-
-        /* --- Categories --- */
-        .category-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
             gap: 2rem;
         }
 
-        .category-card {
+        .narrative-icon-item {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .narrative-icon-item i {
+            color: var(--brushed-gold);
+        }
+
+        .narrative-icon-item h4 {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        /* --- Botanical Grid --- */
+        .botanical-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin-top: 5rem;
+        }
+
+        .plant-card {
             position: relative;
-            height: 480px;
-            border-radius: 30px;
+            height: 600px;
             overflow: hidden;
-            cursor: pointer;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+            background: var(--dark-green);
             transition: var(--transition);
+            cursor: pointer;
         }
 
-        .category-card:hover {
-            transform: translateY(-15px);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-        }
-
-        .cat-img {
+        .plant-card img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            opacity: 0.8;
             transition: var(--transition);
         }
 
-        .category-card:hover .cat-img {
+        .plant-card:hover img {
+            opacity: 0.5;
             transform: scale(1.1);
         }
 
-        .cat-overlay {
+        .plant-card-content {
             position: absolute;
-            inset: 0;
-            background: linear-gradient(to top, rgba(13, 61, 15, 0.9) 0%, rgba(13, 61, 15, 0.2) 50%, transparent 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            padding: 2.5rem;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 3rem;
             color: white;
+            z-index: 2;
         }
 
-        .cat-overlay h3 {
-            font-size: 1.75rem;
-            font-weight: 800;
+        .plant-card h3 {
+            font-size: 2.5rem;
             margin-bottom: 0.5rem;
         }
 
-        .cat-overlay p {
-            font-size: 0.95rem;
-            opacity: 0.8;
-            font-weight: 500;
+        .plant-card p {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--brushed-gold);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: var(--transition);
         }
 
-        /* --- Gallery --- */
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-auto-rows: 250px;
-            gap: 1.5rem;
+        .plant-card:hover p {
+            opacity: 1;
+            transform: translateY(0);
         }
 
-        .gallery-item {
-            border-radius: 20px;
-            overflow: hidden;
+        /* --- Linen Banner --- */
+        .linen-banner {
+            background: url('/images/redesign/linen_texture.png') center/cover;
+            padding: 6rem 5%;
             position: relative;
-            cursor: pointer;
+            margin: 5rem 0;
         }
 
-        .gallery-item.wide { grid-column: span 2; }
-        .gallery-item.tall { grid-row: span 2; }
+        .linen-banner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(139, 157, 131, 0.4);
+        }
 
-        .gallery-item img {
+        .linen-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .linen-item {
+            text-align: center;
+            color: var(--forest-green);
+        }
+
+        .linen-item i {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            color: var(--brushed-gold);
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        }
+
+        .linen-item h4 {
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            font-weight: 700;
+        }
+
+        /* --- Art Wall --- */
+        .art-wall {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-template-rows: repeat(2, 300px);
+            gap: 2rem;
+        }
+
+        .art-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 5px;
+        }
+
+        .art-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             transition: var(--transition);
         }
 
-        .gallery-item:hover img {
-            transform: scale(1.1);
-        }
+        .art-item:hover img { transform: scale(1.1); }
 
-        .gallery-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(27, 94, 32, 0.6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: var(--transition);
-            color: white;
-        }
-
-        .gallery-item:hover .gallery-overlay {
-            opacity: 1;
-        }
-
-        /* --- Why Choose Us --- */
-        .why-us {
-            background-color: var(--accent);
-            border-radius: 60px;
-            margin: 0 5%;
-            padding: 6rem;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 4rem;
-        }
-
-        .why-card {
-            text-align: center;
-        }
-
-        .why-icon {
-            width: 90px;
-            height: 90px;
-            background: white;
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 2rem;
-            color: var(--primary);
-            font-size: 2.5rem;
-            box-shadow: 0 10px 25px rgba(27, 94, 32, 0.1);
-            transition: var(--transition);
-        }
-
-        .why-card:hover .why-icon {
-            transform: translateY(-10px) rotate(10deg);
-            background: var(--primary);
-            color: white;
-        }
-
-        .why-card h4 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: var(--primary-dark);
-        }
-
-        .why-card p {
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
+        .art-item-1 { grid-column: span 8; grid-row: span 2; }
+        .art-item-2 { grid-column: span 4; grid-row: span 1; }
+        .art-item-3 { grid-column: span 4; grid-row: span 1; }
 
         /* --- Visit Us --- */
-        .visit {
+        .visit-container {
             display: grid;
-            grid-template-columns: 1fr 1.2fr;
-            gap: 6rem;
-            align-items: center;
+            grid-template-columns: 1fr 1fr;
+            gap: 5rem;
+            align-items: start;
         }
 
-        .visit-info h2 {
-            font-size: 3.5rem;
-            color: var(--primary-dark);
-            margin-bottom: 2rem;
-        }
-
-        .contact-detail {
-            display: flex;
-            gap: 1.5rem;
-            margin-bottom: 2.5rem;
-        }
-
-        .contact-icon {
-            width: 54px;
-            height: 54px;
-            background: var(--accent);
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary);
-            flex-shrink: 0;
-        }
-
-        .contact-text h5 {
-            font-size: 1.2rem;
-            color: var(--primary-dark);
-            margin-bottom: 0.25rem;
-        }
-
-        .contact-text p {
-            color: var(--text-secondary);
-            font-weight: 500;
-            font-size: 1.05rem;
-        }
-
-        .map-container {
-            height: 500px;
-            border-radius: 40px;
-            overflow: hidden;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.08);
-            border: 8px solid white;
+        .map-box {
+            height: 600px;
+            background: #e5e5e5;
             position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(197, 160, 89, 0.3);
         }
 
         .map-placeholder {
             width: 100%;
             height: 100%;
-            background: #e5e5e5;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            color: var(--text-secondary);
+            background: url('https://api.mapbox.com/styles/v1/mapbox/light-v10/static/70.4764,21.0186,12,0/1200x600?access_token=pk.eyJ1IjoiZGVzaWduZXIiLCJhIjoiY2p4eHg0eHh4eHh4eHh4eHh4eHh4In0.placeholder') center/cover;
+            filter: grayscale(1) sepia(0.2) contrast(1.1);
         }
 
-        /* --- Contact Section --- */
-        .contact-section {
-            background: var(--primary-dark);
-            color: white;
-            border-radius: 60px;
-            margin: 0 5% 5% ;
-            padding: 6rem;
+        .map-pin {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--brushed-gold);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translate(-50%, -50%); }
+            50% { transform: translate(-50%, -70%); }
+        }
+
+        .booking-calendar {
+            background: white;
+            padding: 4rem;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .calendar-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .calendar-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6rem;
-        }
-
-        .contact-form {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 3.5rem;
-            border-radius: 40px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .input-group {
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
             margin-bottom: 2rem;
         }
 
-        .input-group label {
-            display: block;
-            margin-bottom: 0.75rem;
-            font-weight: 600;
+        .cal-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 0.9rem;
-            color: var(--primary-light);
-        }
-
-        .input-group input, .input-group textarea {
-            width: 100%;
-            padding: 1rem 1.5rem;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid transparent;
-            border-radius: 16px;
-            color: white;
-            font-family: inherit;
+            cursor: pointer;
             transition: var(--transition);
         }
 
-        .input-group input:focus, .input-group textarea:focus {
-            outline: none;
-            border-color: var(--primary-light);
-            background: rgba(255, 255, 255, 0.15);
+        .cal-day:hover {
+            background: var(--off-white);
+            color: var(--brushed-gold);
         }
 
-        .btn-submit {
-            width: 100%;
-            padding: 1.1rem;
-            border-radius: 16px;
-            background: var(--primary-light);
+        .cal-day.active {
+            background: var(--brushed-gold);
             color: white;
-            border: none;
-            font-weight: 800;
-            cursor: pointer;
+        }
+
+        .cal-labels {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            text-align: center;
+            font-size: 0.7rem;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.1em;
-            transition: var(--transition);
+            margin-bottom: 1rem;
+            color: var(--earthy-sage);
         }
 
-        .btn-submit:hover {
-            background: #66bb6a;
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(76, 175, 80, 0.3);
+        /* --- Question Card --- */
+        .question-card {
+            background: var(--dark-green);
+            padding: 6rem;
+            text-align: center;
+            border: 1px solid var(--brushed-gold);
+            position: relative;
+            margin-top: 5rem;
+            overflow: hidden;
+        }
+
+        .question-card::before {
+            content: '';
+            position: absolute;
+            inset: 10px;
+            border: 1px solid rgba(197, 160, 89, 0.2);
+            pointer-events: none;
+        }
+
+        .question-card h2 {
+            color: white;
+            font-size: 3.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .question-card p {
+            color: var(--earthy-sage);
+            max-width: 600px;
+            margin: 0 auto 3rem;
+            font-size: 1.2rem;
         }
 
         /* --- Footer --- */
-        .footer {
-            background: var(--background);
-            padding: 6rem 10% 3rem;
-            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        footer {
+            background: var(--dark-green);
+            color: white;
+            padding: 10rem 10% 5rem;
+            position: relative;
+        }
+
+        .footer-leaf-overlay {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 400px;
+            height: 400px;
+            background: url('https://www.transparenttextures.com/patterns/leaf.png');
+            opacity: 0.05;
+            pointer-events: none;
         }
 
         .footer-grid {
             display: grid;
-            grid-template-columns: 1.5fr 1fr 1fr 1fr;
-            gap: 4rem;
-            margin-bottom: 6rem;
+            grid-template-columns: 2fr 1fr 1fr 1.5fr;
+            gap: 5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 5rem;
+            margin-bottom: 5rem;
+        }
+
+        .footer-logo h3 {
+            font-size: 2rem;
+            letter-spacing: 0.1em;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-logo p {
+            color: var(--earthy-sage);
+            font-weight: 300;
+            margin-bottom: 2rem;
         }
 
         .footer-col h4 {
-            font-size: 1.25rem;
-            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            font-size: 0.9rem;
             margin-bottom: 2rem;
-            color: var(--primary-dark);
+            color: var(--brushed-gold);
         }
 
         .footer-links {
             list-style: none;
         }
 
-        .footer-links li {
-            margin-bottom: 1.25rem;
-        }
+        .footer-links li { margin-bottom: 1rem; }
 
         .footer-links a {
             text-decoration: none;
-            color: var(--text-secondary);
-            font-weight: 500;
-            transition: var(--transition);
-        }
-
-        .footer-links a:hover {
-            color: var(--primary);
-            padding-left: 8px;
-        }
-
-        .footer-logo .logo-text { font-size: 1.8rem; margin-bottom: 0.5rem; }
-
-        .social-bar {
-            display: flex;
-            gap: 1.25rem;
-            margin-top: 2.5rem;
-        }
-
-        .social-btn {
-            width: 50px;
-            height: 50px;
-            background: white;
-            border: 1px solid #eee;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-primary);
-            transition: var(--transition);
-            text-decoration: none;
-        }
-
-        .social-btn:hover {
-            background: var(--primary);
             color: white;
-            border-color: var(--primary);
-            transform: translateY(-5px);
+            opacity: 0.6;
+            transition: var(--transition);
         }
+
+        .footer-links a:hover { opacity: 1; color: var(--brushed-gold); }
+
+        .social-icons {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .social-icons a {
+            color: white;
+            opacity: 0.6;
+            transition: var(--transition);
+        }
+
+        .social-icons a:hover { opacity: 1; color: var(--brushed-gold); transform: translateY(-3px); }
 
         .footer-bottom {
-            padding-top: 3rem;
-            border-top: 1px solid rgba(0, 0, 0, 0.05);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-            font-weight: 500;
+            font-size: 0.8rem;
+            opacity: 0.4;
+            letter-spacing: 0.1em;
         }
 
         /* --- Animations --- */
         .reveal {
             opacity: 0;
-            transform: translateY(40px);
-            transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateY(50px);
+            transition: var(--transition);
         }
 
         .reveal.active {
@@ -759,377 +659,290 @@
             transform: translateY(0);
         }
 
-        [data-delay="200"] { transition-delay: 0.2s; }
-        [data-delay="400"] { transition-delay: 0.4s; }
-        [data-delay="600"] { transition-delay: 0.6s; }
-
         /* --- Responsive --- */
-        @media (max-width: 1280px) {
-            .navbar { padding: 1.25rem 5%; }
-            .hero h1 { font-size: 4.5rem; }
-            .category-grid { grid-template-columns: repeat(2, 1fr); }
-            .why-us { grid-template-columns: repeat(2, 1fr); padding: 4rem; }
-            .footer-grid { grid-template-columns: 1.5fr 1fr; gap: 3rem; }
+        @media (max-width: 1200px) {
+            .narrative, .visit-container { grid-template-columns: 1fr; }
+            .botanical-grid { grid-template-columns: repeat(2, 1fr); }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
         }
 
         @media (max-width: 768px) {
-            .nav-links, .nav-actions .nav-cta { display: none; }
             section { padding: 5rem 5%; }
-            .about, .visit, .contact-section { grid-template-columns: 1fr; gap: 4rem; }
-            .hero h1 { font-size: 3.2rem; }
-            .why-us { grid-template-columns: 1fr; padding: 3rem; }
-            .section-header h2 { font-size: 2.2rem; }
-            .gallery-grid { grid-template-columns: repeat(2, 1fr); }
-            .about h2, .visit-info h2 { font-size: 2.5rem; }
-            .contact-section { padding: 3rem 5%; }
+            .hero h1 { font-size: 3.5rem; }
+            .section-title { font-size: 2.5rem; }
+            .botanical-grid { grid-template-columns: 1fr; }
+            .art-wall { grid-template-columns: 1fr; grid-template-rows: auto; }
+            .art-item-1, .art-item-2, .art-item-3 { grid-column: span 1; }
         }
     </style>
 </head>
 <body>
 
     <!-- Navigation -->
-    <nav class="navbar" id="navbar">
+    <nav id="main-nav">
         <a href="#" class="logo">
-            <i data-lucide="leaf" size="32" stroke-width="2.5"></i>
-            <div>
-                <span class="logo-text nursery-title">New Vrundavan</span>
-                <span class="logo-tagline">Nursery & Landscapes</span>
-            </div>
+            <i data-lucide="leaf" size="32"></i>
+            <span class="logo-text">Vrundavan</span>
         </a>
-        
         <ul class="nav-links">
-            <li><a href="#" class="nav-link active">Home</a></li>
-            <li><a href="#about" class="nav-link">About</a></li>
-            <li><a href="#plants" class="nav-link">Our Plants</a></li>
-            <li><a href="#gallery" class="nav-link">Gallery</a></li>
+            <li><a href="#about" class="nav-link">Our Story</a></li>
+            <li><a href="#varieties" class="nav-link">Collections</a></li>
+            <li><a href="#farm" class="nav-link">The Farm</a></li>
             <li><a href="#visit" class="nav-link">Visit Us</a></li>
         </ul>
-        
-        <div class="nav-actions">
-            @if (Route::has('login'))
-                @auth
-                    <a href="{{ url('/dashboard') }}" class="nav-text-link mr-4">Dashboard</a>
-                    <a href="#visit" class="nav-cta">Get Directions</a>
-                @else
-                    <a href="{{ route('login') }}" class="nav-cta">Log In</a>
-                @endauth
-            @endif
+        <div style="display: flex; gap: 1rem; align-items: center;">
+            <a href="/login" class="nav-link" style="font-size: 0.7rem; font-weight: 700;">Admin Login</a>
+            <a href="#visit" class="btn-gold" style="padding: 0.8rem 1.5rem; font-size: 0.7rem;">Book Visit</a>
         </div>
     </nav>
 
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-bg"></div>
-        <div class="hero-content">
-            <h1 class="nursery-title">Welcome to <br>New Vrundavan Nursery</h1>
-            <p>Your premium destination for the finest fruit, flower, and ornamental plants. Nestled in Gadu, Gujarat, we bring you the healthiest greens nurtured with decades of expertise.</p>
-            <div class="hero-btns">
-                <a href="#visit" class="btn btn-fill">Plan a Visit <i data-lucide="map-pin"></i></a>
-                <a href="#plants" class="btn btn-outline">Explore Gallery <i data-lucide="camera"></i></a>
+        <div class="hero-overlay"></div>
+        <div class="hero-content reveal">
+            <h1>
+                <span>Welcome to</span>
+                NEW VRUNDAVAN<br>
+                <span class="gold-text gold-leaf-flourish">NURSERY</span>
+            </h1>
+            <div class="hero-cta">
+                <a href="#varieties" class="btn-gold">તમારો છોડ શોધો</a>
             </div>
         </div>
     </section>
 
-    <!-- About Section -->
+    <!-- Narrative Section -->
     <section id="about" class="reveal">
-        <div class="about">
-            <div class="about-image-container">
-                <img src="{{ asset('nursery_hero_banner_1775270948136.png') }}" alt="Our Nursery" class="about-img">
-                <div class="about-badge">
-                    <span class="years">30+</span>
-                    <span class="text">Years of Excellence</span>
-                </div>
+        <span class="section-tag">Since 1995</span>
+        <div class="narrative">
+            <div class="narrative-image">
+                <img src="/images/redesign/greenhouse.png" alt="Our Greenhouse">
             </div>
-            <div class="about-content">
-                <span>Since 1995</span>
-                <h2 class="nursery-title">Cultivating Nature's Best with Heart and Science</h2>
-                <p>New Vrundavan Nursery is more than just a place to buy plants. We are a team of dedicated botanists and garden enthusiasts committed to providing Gadu and the surrounding districts with premium botanical quality.</p>
-                <p>Whether you're a wholesaler looking for high-volume fruit plants or a homeowner seeking that perfect ornamental piece, our 50-acre facility has everything you need to grow your green world.</p>
-                
-                <ul class="check-list">
-                    <li class="check-item"><i data-lucide="check-circle-2"></i> Premium Root Health</li>
-                    <li class="check-item"><i data-lucide="check-circle-2"></i> Disease-Free Saplings</li>
-                    <li class="check-item"><i data-lucide="check-circle-2"></i> Expert Soil Mix</li>
-                    <li class="check-item"><i data-lucide="check-circle-2"></i> Landscape Consulting</li>
-                    <li class="check-item"><i data-lucide="check-circle-2"></i> Retail & Wholesale</li>
-                    <li class="check-item"><i data-lucide="check-circle-2"></i> Bulk Orders</li>
-                </ul>
+            <div class="narrative-content">
+                <h2>Cultivating Nature's Best with Heart and Science</h2>
+                <p>Nestled in the heart of Gadu, Gujarat, our nursery is more than just a garden center. It is a botanical sanctuary where tradition meets modern horticultural excellence.</p>
+                <div class="narrative-icons">
+                    <div class="narrative-icon-item">
+                        <i data-lucide="award" size="32"></i>
+                        <h4>Premium Quality</h4>
+                    </div>
+                    <div class="narrative-icon-item">
+                        <i data-lucide="sun" size="32"></i>
+                        <h4>Grown Sustainably</h4>
+                    </div>
+                    <div class="narrative-icon-item">
+                        <i data-lucide="heart" size="32"></i>
+                        <h4>Expert Care</h4>
+                    </div>
+                    <div class="narrative-icon-item">
+                        <i data-lucide="truck" size="32"></i>
+                        <h4>Nationwide Delivery</h4>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Plant Categories -->
-    <section id="plants" class="reveal">
-        <div class="section-header">
-            <span>Our Collection</span>
-            <h2 class="nursery-title">Explore Our Botanical Varieties</h2>
-            <p>Discover a wide range of plants carefully selected to thrive in our climate. From exotic flowers to high-yield fruit trees.</p>
-        </div>
-        
-        <div class="category-grid">
-            <div class="category-card reveal" data-delay="0">
-                <img src="{{ asset('flower_plants_category_1775272097882.png') }}" alt="Flower Plants" class="cat-img">
-                <div class="cat-overlay">
-                    <h3>Flower Plants</h3>
-                    <p>Hibiscus, Rose, Bougainvillea & more</p>
+    <!-- Botanical Varieties -->
+    <section id="varieties">
+        <span class="section-tag">Explore Collections</span>
+        <h2 class="section-title">Our Botanical Varieties</h2>
+        <div class="botanical-grid">
+            <div class="plant-card reveal" data-delay="0">
+                <img src="/images/redesign/house_plants.png" alt="House Plants">
+                <div class="plant-card-content">
+                    <h3>House Plants</h3>
+                    <p>Artisanal Curation</p>
                 </div>
             </div>
-            <div class="category-card reveal" data-delay="200">
-                <img src="{{ asset('indoor_plant_category_1775270994110.png') }}" alt="Indoor Plants" class="cat-img">
-                <div class="cat-overlay">
+            <div class="plant-card reveal" data-delay="100">
+                <img src="/images/redesign/indoor_plants.png" alt="Ornamental & Indoor">
+                <div class="plant-card-content">
                     <h3>Ornamental & Indoor</h3>
-                    <p>Monstera, Palm, Snake Plants</p>
+                    <p>Architectural Beauty</p>
                 </div>
             </div>
-            <div class="category-card reveal" data-delay="400">
-                <img src="{{ asset('nursery_assets_pack_1775271017163.png') }}" style="object-position: 0 0;" alt="Fruit Plants" class="cat-img">
-                <div class="cat-overlay">
+            <div class="plant-card reveal" data-delay="200">
+                <img src="/images/redesign/fruit_plants.png" alt="Fruit Plants">
+                <div class="plant-card-content">
                     <h3>Fruit Plants</h3>
-                    <p>Mango, Chickoo, Coconut & Citrus</p>
+                    <p>Nature's Bounty</p>
                 </div>
             </div>
-            <div class="category-card reveal" data-delay="600">
-                <img src="{{ asset('medicinal_plants_category_1775272123118.png') }}" alt="Medicinal Plants" class="cat-img">
-                <div class="cat-overlay">
-                    <h3>Medicinal & Herbs</h3>
-                    <p>Tulsi, Aloe Vera, Neem & Mint</p>
+            <div class="plant-card reveal" data-delay="300">
+                <img src="/images/redesign/medicinal_herbs.png" alt="Medicinal Herbs">
+                <div class="plant-card-content">
+                    <h3>Medicinal Herbs</h3>
+                    <p>Ancient Wisdom</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Why Choose Us -->
-    <section class="reveal">
-        <div class="why-us">
-            <div class="why-card reveal" data-delay="0">
-                <div class="why-icon"><i data-lucide="heart"></i></div>
-                <h4>Healthy Plants</h4>
-                <p>Grown in nutrient-rich soil with natural fertilizers.</p>
+    <!-- Linen Banner -->
+    <div class="linen-banner">
+        <div class="linen-content">
+            <div class="linen-item reveal">
+                <i data-lucide="sprout"></i>
+                <h4>Organic Roots</h4>
             </div>
-            <div class="why-card reveal" data-delay="200">
-                <div class="why-icon"><i data-lucide="layers"></i></div>
-                <h4>Wide Variety</h4>
-                <p>Over 500+ species of plants available in different sizes.</p>
+            <div class="linen-item reveal" data-delay="100">
+                <i data-lucide="droplets"></i>
+                <h4>Pure Water</h4>
             </div>
-            <div class="why-card reveal" data-delay="400">
-                <div class="why-icon"><i data-lucide="graduation-cap"></i></div>
+            <div class="linen-item reveal" data-delay="200">
+                <i data-lucide="shield-check"></i>
+                <h4>Disease Free</h4>
+            </div>
+            <div class="linen-item reveal" data-delay="300">
+                <i data-lucide="users"></i>
                 <h4>Expert Advice</h4>
-                <p>Get personalized care routines from our farm experts.</p>
             </div>
-            <div class="why-card reveal" data-delay="600">
-                <div class="why-icon"><i data-lucide="tag"></i></div>
-                <h4>Best Pricing</h4>
-                <p>Competitive wholesale and retail rates in the region.</p>
+        </div>
+    </div>
+
+    <!-- Art Wall / Snapshots -->
+    <section id="farm">
+        <span class="section-tag">Our Legacy</span>
+        <h2 class="section-title">Snapshots from Our Farm</h2>
+        <div class="art-wall">
+            <div class="art-item art-item-1 reveal">
+                <img src="/images/redesign/farm_1.png" alt="Farm View">
+            </div>
+            <div class="art-item art-item-2 reveal" data-delay="100">
+                <img src="/images/redesign/farm_2.png" alt="Careful Tending">
+            </div>
+            <div class="art-item art-item-3 reveal" data-delay="200">
+                <img src="/images/redesign/greenhouse.png" alt="Greenhouse Details">
             </div>
         </div>
     </section>
 
-    <!-- Gallery Section -->
-    <section id="gallery" class="reveal">
-        <div class="section-header">
-            <span>The Nursery Life</span>
-            <h2 class="nursery-title">Snapshots from Our Farm</h2>
-        </div>
-        
-        <div class="gallery-grid">
-            <div class="gallery-item wide tall reveal">
-                <img src="{{ asset('nursery_panoramic_view_1775272065443.png') }}" alt="Panorama">
-                <div class="gallery-overlay"><i data-lucide="zoom-in"></i></div>
+    <!-- Visit Us -->
+    <section id="visit">
+        <span class="section-tag">Get in Touch</span>
+        <h2 class="section-title">Plan Your Visit to Our Nursery</h2>
+        <div class="visit-container">
+            <div class="map-box reveal">
+                <iframe 
+                    src="https://maps.google.com/maps?q=21.052162,70.286334&z=15&output=embed" 
+                    width="100%" 
+                    height="100%" 
+                    style="border:0; filter: grayscale(1) sepia(0.2) contrast(1.1);" 
+                    allowfullscreen="" 
+                    loading="lazy">
+                </iframe>
             </div>
-            <div class="gallery-item reveal">
-                <img src="{{ asset('flower_plants_category_1775272097882.png') }}" alt="Flowers">
-                <div class="gallery-overlay"><i data-lucide="zoom-in"></i></div>
-            </div>
-            <div class="gallery-item reveal">
-                <img src="{{ asset('nursery_assets_pack_1775271017163.png') }}" style="object-position: 100% 100%;" alt="Succulents">
-                <div class="gallery-overlay"><i data-lucide="zoom-in"></i></div>
-            </div>
-            <div class="gallery-item wide reveal">
-                <img src="{{ asset('nursery_categories_1775270970501.png') }}" style="object-position: center;" alt="Crops">
-                <div class="gallery-overlay"><i data-lucide="zoom-in"></i></div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Visit Us Section -->
-    <section id="visit" class="reveal">
-        <div class="visit">
-            <div class="visit-info">
-                <span>Get in Touch</span>
-                <h2 class="nursery-title">Plan Your Visit to Our Nursery</h2>
-                <div class="contact-detail">
-                    <div class="contact-icon"><i data-lucide="map-pin"></i></div>
-                    <div class="contact-text">
-                        <h5>Our Location</h5>
-                        <p>Gadu - Chorvad Circle, Porbandar Highway,<br>Gadu (Sherbaug)-362255, Dist : Junagadh</p>
-                    </div>
+            <div class="booking-calendar reveal" data-delay="200">
+                <div class="calendar-header">
+                    <h3>May 2026</h3>
                 </div>
-                <div class="contact-detail">
-                    <div class="contact-icon"><i data-lucide="phone"></i></div>
-                    <div class="contact-text">
-                        <h5>Call Us</h5>
-                        <p>+91 63551 51302 / +91 99255 75862</p>
-                    </div>
+                <div class="cal-labels">
+                    <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
                 </div>
-                <div class="contact-detail">
-                    <div class="contact-icon"><i data-lucide="clock"></i></div>
-                    <div class="contact-text">
-                        <h5>Opening Hours</h5>
-                        <p>Every Day: 8:00 AM - 7:00 PM</p>
-                    </div>
+                <div class="calendar-grid">
+                    <!-- Placeholder days -->
+                    <div class="cal-day">27</div><div class="cal-day">28</div><div class="cal-day">29</div><div class="cal-day">30</div>
+                    <div class="cal-day">1</div><div class="cal-day active">2</div><div class="cal-day">3</div><div class="cal-day">4</div>
+                    <div class="cal-day">5</div><div class="cal-day">6</div><div class="cal-day">7</div><div class="cal-day">8</div>
+                    <div class="cal-day">9</div><div class="cal-day">10</div><div class="cal-day">11</div><div class="cal-day">12</div>
+                    <div class="cal-day">13</div><div class="cal-day">14</div><div class="cal-day">15</div><div class="cal-day">16</div>
+                    <div class="cal-day">17</div><div class="cal-day">18</div><div class="cal-day">19</div><div class="cal-day">20</div>
+                    <div class="cal-day">21</div><div class="cal-day">22</div><div class="cal-day">23</div><div class="cal-day">24</div>
                 </div>
-                <a href="https://maps.google.com" target="_blank" class="btn btn-fill">Get Directions on Google Maps</a>
-            </div>
-            
-            <div class="map-container">
-                <div class="map-placeholder">
-                    <i data-lucide="map" size="48" style="margin-bottom: 1rem; opacity: 0.5;"></i>
-                    <p style="font-weight: 600;">Google Maps Integration Placeholder</p>
-                    <p style="font-size: 0.9rem; opacity: 0.7;">Gadu - Chorvad Circle, Highway</p>
-                </div>
+                <a href="https://wa.me/919925575862" class="btn-gold" style="width: 100%; text-align: center;">Book Appointment</a>
             </div>
         </div>
     </section>
 
-    <!-- Contact & Inquiry -->
-    <section class="reveal">
-        <div class="contact-section">
-            <div class="contact-text-content">
-                <h2 class="nursery-title" style="font-size: 3.5rem; margin-bottom: 2rem;">Have Any <br>Questions?</h2>
-                <p style="font-size: 1.25rem; opacity: 0.8; margin-bottom: 3rem;">Whether you're looking for wholesale quotes, plant care advice, or stock availability, we're here to help.</p>
-                
-                <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
-                    <a href="tel:6355151302" class="btn btn-outline" style="border-color: var(--primary-light); color: var(--primary-light); padding: 1rem 2rem;">
-                        <i data-lucide="phone"></i> Call Now
-                    </a>
-                    <a href="https://wa.me/916355151302" class="btn btn-outline" style="border-color: #25D366; color: #25D366; padding: 1rem 2rem;">
-                        <i data-lucide="message-circle"></i> WhatsApp
-                    </a>
-                </div>
-            </div>
-            
-            <div class="contact-form">
-                <form>
-                    <div class="input-group">
-                        <label>FULL NAME</label>
-                        <input type="text" placeholder="Your name here" required>
-                    </div>
-                    <div class="input-group">
-                        <label>PHONE NUMBER</label>
-                        <input type="tel" placeholder="Your phone number" required>
-                    </div>
-                    <div class="input-group">
-                        <label>YOUR MESSAGE</label>
-                        <textarea rows="4" placeholder="How can we help you?"></textarea>
-                    </div>
-                    <button type="submit" class="btn-submit">Send Inquiry</button>
-                </form>
+    <!-- Question Card -->
+    <section>
+        <div class="question-card reveal">
+            <h2>Have Any Questions?</h2>
+            <p>Our botanical experts are here to help you choose the perfect plants for your space and lifestyle.</p>
+            <div style="display: flex; gap: 2rem; justify-content: center;">
+                <a href="tel:+919925575862" class="btn-gold">Call Us</a>
+                <a href="https://wa.me/919925575862" class="btn-gold">WhatsApp</a>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="footer">
+    <footer>
+        <div class="footer-leaf-overlay"></div>
         <div class="footer-grid">
-            <div class="footer-col">
-                <a href="#" class="logo footer-logo">
-                    <i data-lucide="leaf" size="40" stroke-width="2.5"></i>
-                    <div>
-                        <span class="logo-text nursery-title">New Vrundavan</span>
-                        <span class="logo-tagline">Nursery & Landscapes</span>
-                    </div>
-                </a>
-                <p style="margin-top: 1.5rem; color: var(--text-secondary); font-weight: 500;">Retailer & Wholesaler of All Fruit, Flower & Ornamental Plants. Serving Junagadh and beyond since 1995.</p>
-                <div class="social-bar">
-                    <a href="#" class="social-btn"><i data-lucide="facebook"></i></a>
-                    <a href="#" class="social-btn"><i data-lucide="instagram"></i></a>
-                    <a href="#" class="social-btn"><i data-lucide="twitter"></i></a>
+            <div class="footer-logo">
+                <h3>Vrundavan</h3>
+                <p>Nurturing nature's beauty since 1995. Premium botanical sanctuary in Gadu, Gujarat.</p>
+                <div class="social-icons">
+                    <a href="#"><i data-lucide="instagram"></i></a>
+                    <a href="#"><i data-lucide="facebook"></i></a>
+                    <a href="#"><i data-lucide="twitter"></i></a>
                 </div>
             </div>
-            
-            <div class="footer-col" style="padding-left: 2rem;">
-                <h4>Quick Links</h4>
+            <div class="footer-col">
+                <h4>Sitemap</h4>
                 <ul class="footer-links">
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#about">About Us</a></li>
-                    <li><a href="#plants">Our Plants</a></li>
-                    <li><a href="#gallery">Gallery</a></li>
+                    <li><a href="#about">Our Story</a></li>
+                    <li><a href="#varieties">Collections</a></li>
+                    <li><a href="#farm">The Farm</a></li>
+                    <li><a href="#visit">Visit Us</a></li>
                 </ul>
             </div>
-            
             <div class="footer-col">
                 <h4>Categories</h4>
                 <ul class="footer-links">
-                    <li><a href="#">Fruit Plants</a></li>
-                    <li><a href="#">Flower Plants</a></li>
+                    <li><a href="#">House Plants</a></li>
                     <li><a href="#">Ornamental</a></li>
-                    <li><a href="#">Landscape design</a></li>
+                    <li><a href="#">Fruit Plants</a></li>
+                    <li><a href="#">Medicinal</a></li>
                 </ul>
             </div>
-            
             <div class="footer-col">
-                <h4>Contact Us</h4>
-                <ul class="footer-links" style="color:var(--text-secondary)">
-                    <li style="margin-bottom: 1.5rem;">
-                        <span style="display:block; color:var(--primary-dark); font-weight: 800; font-size: 0.8rem; text-transform: uppercase;">Location</span>
-                        Gadu - Chorvad Circle, Gadu (Sherbaug)-362255
-                    </li>
-                    <li style="margin-bottom: 1.5rem;">
-                        <span style="display:block; color:var(--primary-dark); font-weight: 800; font-size: 0.8rem; text-transform: uppercase;">Call Us</span>
-                        +91 63551 51302 / +91 99255 75862
-                    </li>
-                </ul>
+                <h4>Contact</h4>
+                <p style="opacity: 0.6; margin-bottom: 1rem;">Gadu NH 8-D, Junagadh Road, Gir Somnath, Gujarat</p>
+                <p style="opacity: 0.6;">+91 94282 34442</p>
+                <p style="opacity: 0.6;">info@newvrundavan.com</p>
             </div>
         </div>
-        
         <div class="footer-bottom">
-            <p>&copy; 2026 New Vrundavan Nursery. All rights reserved.</p>
-            <div style="display: flex; gap: 2.5rem;">
-                <a href="#" style="color: var(--text-secondary); text-decoration: none;">Privacy Policy</a>
-                <a href="#" style="color: var(--text-secondary); text-decoration: none;">Terms of Service</a>
-            </div>
+            <p>&copy; 2026 NEW VRUNDAVAN NURSERY. ALL RIGHTS RESERVED.</p>
+            <p>DESIGNED BY ANTIGRAVITY</p>
         </div>
     </footer>
 
     <script>
-        // Initialize Lucide Icons
+        // Initialize Lucide icons
         lucide.createIcons();
 
-        // Navbar Scroll Effect
-        window.addEventListener('scroll', () => {
-            const navbar = document.getElementById('navbar');
-            if (window.scrollY > 100) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-        });
-
-        // Reveal on Scroll
+        // Scroll animations
         const revealElements = document.querySelectorAll('.reveal');
-        const revealOnScroll = () => {
-            revealElements.forEach(el => {
-                const windowHeight = window.innerHeight;
-                const elementTop = el.getBoundingClientRect().top;
-                const elementPoint = 100;
-                
-                if (elementTop < windowHeight - elementPoint) {
-                    el.classList.add('active');
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const delay = entry.target.getAttribute('data-delay') || 0;
+                    setTimeout(() => {
+                        entry.target.classList.add('active');
+                    }, delay);
                 }
             });
-        };
-        
-        window.addEventListener('scroll', revealOnScroll);
-        window.addEventListener('load', revealOnScroll);
+        }, observerOptions);
 
-        // Smooth Scroll for Navigation
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
-            });
+        revealElements.forEach(el => observer.observe(el));
+
+        // Nav scroll effect
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('main-nav');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
         });
     </script>
 </body>
