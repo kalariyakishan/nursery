@@ -187,25 +187,22 @@ class InvoiceController extends Controller
         $invoice->load('items');
         
         $paperSize = $request->query('paper_size', 'a4');
+
         $isPdf = true;
-
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('invoices.show', compact('invoice', 'paperSize', 'isPdf'))
-            ->setOption('isPhpEnabled', true);
+        $paperSize = $request->query('paper_size', 'a4');
+        $html = view('invoices.pdf', compact('invoice', 'paperSize', 'isPdf'))->render();
         
-        switch ($paperSize) {
-            case 'a5':
-                $pdf->setPaper('A5', 'portrait');
-                break;
-            case 'letter':
-                $pdf->setPaper('letter', 'portrait');
-                break;
-            case 'a4':
-            default:
-                $pdf->setPaper('A4', 'portrait');
-                break;
-        }
+        $dompdf = new \Dompdf\Dompdf();
+        $dompdf->set_option('isRemoteEnabled', true);
+        $dompdf->set_option('isHtml5ParserEnabled', true);
+        
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper($paperSize, 'portrait');
+        $dompdf->render();
 
-        return $pdf->stream('invoice_' . $invoice->id . '.pdf');
+        return response($dompdf->output())
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'inline; filename="invoice_' . $invoice->id . '.pdf"');
     }
 
     public function update(Request $request, Invoice $invoice)
