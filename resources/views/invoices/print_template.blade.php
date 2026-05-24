@@ -1,35 +1,132 @@
 @php
-function gujaratiAmountInWordsPrint($number) {
-    if ($number == 0) return 'શૂન્ય';
-    $number = round($number, 2);
-    $whole = floor($number);
-    $fraction = round(($number - $whole) * 100);
-    $words = [
-        0 => '', 1 => 'એક', 2 => 'બે', 3 => 'ત્રણ', 4 => 'ચાર', 5 => 'પાંચ', 6 => 'છ', 7 => 'સાત', 8 => 'આઠ', 9 => 'નવ', 10 => 'દસ',
-        11 => 'અગિયાર', 12 => 'બાર', 13 => 'તેર', 14 => 'ચૌદ', 15 => 'પંદર', 16 => 'સોળ', 17 => 'સત્તર', 18 => 'અઢાર', 19 => 'ઓગણીસ', 20 => 'વીસ',
-        21 => 'એકવીસ', 22 => 'બાવીસ', 23 => 'તેવીસ', 24 => 'ચોવીસ', 25 => 'પચીસ', 26 => 'છવ્વીસ', 27 => 'સત્યાવીસ', 28 => 'અઠ્ઠાવીસ', 29 => 'ઓગણત્રીસ', 30 => 'ત્રીસ',
-        31 => 'એકત્રીસ', 32 => 'બત્રીસ', 33 => 'તેત્રીસ', 34 => 'ચોત્રીસ', 35 => 'પાંત્રીસ', 36 => 'છત્રીસ', 37 => 'સાડત્રીસ', 38 => 'આડત્રીસ', 39 => 'ઓગણચાળીસ', 40 => 'ચાલીસ',
-        41 => 'એકતાલીસ', 42 => 'બેતાલીસ', 43 => 'તેતાલીસ', 44 => 'ચોતાલીસ', 45 => 'પિસ્તતાલીસ', 46 => 'છેતાલીસ', 47 => 'સુડતાલીસ', 48 => 'અડતાલીસ', 49 => 'ઓગણપચાસ', 50 => 'પચાસ',
-        51 => 'એકાવન', 52 => 'બાવન', 53 => 'તેપન', 54 => 'ચોપન', 55 => 'પંચાવન', 56 => 'છપ્પન', 57 => 'સત્તાવન', 58 => 'અઠ્ઠાવન', 59 => 'ઓગણસાઠ', 60 => 'સાઠ',
-        61 => 'એકસાઠ', 62 => 'બાસઠ', 63 => 'ત્રેસઠ', 64 => 'ચોસઠ', 65 => 'પાસઠ', 66 => 'છાસઠ', 67 => 'સડસઠ', 68 => 'અડસઠ', 69 => 'ઓગણોસિત્તેર', 70 => 'સિત્તેર',
-        71 => 'એક્યોતેર', 72 => 'બોતેર', 73 => 'તોતેર', 74 => 'ચોતેર', 75 => 'પંચોતેર', 76 => 'છોતેર', 77 => 'સિત્યોતેર', 78 => 'ઈઠ્યોતેર', 79 => 'ઓગણાએંસી', 80 => 'એંસી',
-        81 => 'એક્યાસી', 82 => 'બ્યાસી', 83 => 'ત્યાસી', 84 => 'ચોર્યાસી', 85 => 'પંચાસી', 86 => 'છ્યાસી', 87 => 'સિત્યાસી', 88 => 'ઈઠ્યાસી', 89 => 'નેવ્યાસી', 90 => 'નેવું',
-        91 => 'એકાણું', 92 => 'બાણું', 93 => 'ત્રાણું', 94 => 'ચોરાણું', 95 => 'પંચાણું', 96 => 'છન્નું', 97 => 'સત્તાણું', 98 => 'અઠ્ઠાણું', 99 => 'નવાણું'
-    ];
-    $convert = function($n) use ($words, &$convert) {
-        if ($n == 0) return '';
-        if ($n < 100) return $words[$n];
-        if ($n < 1000) return $words[floor($n/100)] . ' સો ' . $convert($n % 100);
-        if ($n < 100000) return $words[floor($n/1000)] . ' હજાર ' . $convert($n % 1000);
-        if ($n < 10000000) return $words[floor($n/100000)] . ' લાખ ' . $convert($n % 100000);
-        return $words[floor($n/10000000)] . ' કરોડ ' . $convert($n % 10000000);
-    };
-    $res = $convert($whole) . ' રૂપિયા ';
-    if ($fraction > 0) {
-        $res .= 'અને ' . $words[$fraction] . ' પૈસા ';
+    function gujaratiAmountInWordsPrint($number)
+    {
+        if ($number == 0)
+            return 'શૂન્ય';
+        $number = round($number, 2);
+        $whole = floor($number);
+        $fraction = round(($number - $whole) * 100);
+        $words = [
+            0 => '',
+            1 => 'એક',
+            2 => 'બે',
+            3 => 'ત્રણ',
+            4 => 'ચાર',
+            5 => 'પાંચ',
+            6 => 'છ',
+            7 => 'સાત',
+            8 => 'આઠ',
+            9 => 'નવ',
+            10 => 'દસ',
+            11 => 'અગિયાર',
+            12 => 'બાર',
+            13 => 'તેર',
+            14 => 'ચૌદ',
+            15 => 'પંદર',
+            16 => 'સોળ',
+            17 => 'સત્તર',
+            18 => 'અઢાર',
+            19 => 'ઓગણીસ',
+            20 => 'વીસ',
+            21 => 'એકવીસ',
+            22 => 'બાવીસ',
+            23 => 'તેવીસ',
+            24 => 'ચોવીસ',
+            25 => 'પચીસ',
+            26 => 'છવ્વીસ',
+            27 => 'સત્યાવીસ',
+            28 => 'અઠ્ઠાવીસ',
+            29 => 'ઓગણત્રીસ',
+            30 => 'ત્રીસ',
+            31 => 'એકત્રીસ',
+            32 => 'બત્રીસ',
+            33 => 'તેત્રીસ',
+            34 => 'ચોત્રીસ',
+            35 => 'પાંત્રીસ',
+            36 => 'છત્રીસ',
+            37 => 'સાડત્રીસ',
+            38 => 'આડત્રીસ',
+            39 => 'ઓગણચાળીસ',
+            40 => 'ચાલીસ',
+            41 => 'એકતાલીસ',
+            42 => 'બેતાલીસ',
+            43 => 'તેતાલીસ',
+            44 => 'ચોતાલીસ',
+            45 => 'પિસ્તતાલીસ',
+            46 => 'છેતાલીસ',
+            47 => 'સુડતાલીસ',
+            48 => 'અડતાલીસ',
+            49 => 'ઓગણપચાસ',
+            50 => 'પચાસ',
+            51 => 'એકાવન',
+            52 => 'બાવન',
+            53 => 'તેપન',
+            54 => 'ચોપન',
+            55 => 'પંચાવન',
+            56 => 'છપ્પન',
+            57 => 'સત્તાવન',
+            58 => 'અઠ્ઠાવન',
+            59 => 'ઓગણસાઠ',
+            60 => 'સાઠ',
+            61 => 'એકસાઠ',
+            62 => 'બાસઠ',
+            63 => 'ત્રેસઠ',
+            64 => 'ચોસઠ',
+            65 => 'પાસઠ',
+            66 => 'છાસઠ',
+            67 => 'સડસઠ',
+            68 => 'અડસઠ',
+            69 => 'ઓગણોસિત્તેર',
+            70 => 'સિત્તેર',
+            71 => 'એક્યોતેર',
+            72 => 'બોતેર',
+            73 => 'તોતેર',
+            74 => 'ચોતેર',
+            75 => 'પંચોતેર',
+            76 => 'છોતેર',
+            77 => 'સિત્યોતેર',
+            78 => 'ઈઠ્યોતેર',
+            79 => 'ઓગણાએંસી',
+            80 => 'એંસી',
+            81 => 'એક્યાસી',
+            82 => 'બ્યાસી',
+            83 => 'ત્યાસી',
+            84 => 'ચોર્યાસી',
+            85 => 'પંચાસી',
+            86 => 'છ્યાસી',
+            87 => 'સિત્યાસી',
+            88 => 'ઈઠ્યાસી',
+            89 => 'નેવ્યાસી',
+            90 => 'નેવું',
+            91 => 'એકાણું',
+            92 => 'બાણું',
+            93 => 'ત્રાણું',
+            94 => 'ચોરાણું',
+            95 => 'પંચાણું',
+            96 => 'છન્નું',
+            97 => 'સત્તાણું',
+            98 => 'અઠ્ઠાણું',
+            99 => 'નવાણું'
+        ];
+        $convert = function ($n) use ($words, &$convert) {
+            if ($n == 0)
+                return '';
+            if ($n < 100)
+                return $words[$n];
+            if ($n < 1000)
+                return $words[floor($n / 100)] . ' સો ' . $convert($n % 100);
+            if ($n < 100000)
+                return $words[floor($n / 1000)] . ' હજાર ' . $convert($n % 1000);
+            if ($n < 10000000)
+                return $words[floor($n / 100000)] . ' લાખ ' . $convert($n % 100000);
+            return $words[floor($n / 10000000)] . ' કરોડ ' . $convert($n % 10000000);
+        };
+        $res = $convert($whole) . ' રૂપિયા ';
+        if ($fraction > 0) {
+            $res .= 'અને ' . $words[$fraction] . ' પૈસા ';
+        }
+        return $res . 'પૂરા.';
     }
-    return $res . 'પૂરા.';
-}
 @endphp
 <style>
 @font-face {
@@ -454,95 +551,95 @@ function gujaratiAmountInWordsPrint($number) {
             $pages = [];
             $current_page_items = [];
             $page_index = 0;
-            
-            $limit_first_page = 24; 
-            $limit_other_page = 26; 
+
+            $limit_first_page = 24;
+            $limit_other_page = 27;
             $limit_first_with_footer = 18;
             $limit_other_with_footer = 18;
 
-            foreach($all_items as $idx => $it) {
+            foreach ($all_items as $idx => $it) {
                 $current_page_items[] = $it;
-                
+
                 $is_first = ($page_index == 0);
                 $max_no_footer = $is_first ? $limit_first_page : $limit_other_page;
-                
+
                 if (count($current_page_items) == $max_no_footer && ($idx + 1) < count($all_items)) {
                     $pages[] = $current_page_items;
                     $current_page_items = [];
                     $page_index++;
                 }
             }
-            
+
             // For the last batch of items (or if no items were mapped yet)
             $is_first = ($page_index == 0);
             $max_with_footer = $is_first ? $limit_first_with_footer : $limit_other_with_footer;
-            
+
             if (count($current_page_items) > $max_with_footer) {
                 // Doesn't fit with footer! Push current, then create a blank page for the footer.
                 $pages[] = $current_page_items;
-                $pages[] = []; 
+                $pages[] = [];
             } else {
                 if (count($current_page_items) > 0 || count($pages) == 0) {
                     $pages[] = $current_page_items;
                 }
             }
-            
+
             $running_total = 0;
             $page_count = count($pages);
         @endphp
 
         @foreach($pages as $page_index => $p_items)
             <div class="pt-page">
-                
-                @if($page_index == 0)
-                <div class="pt-strip"></div>
-                <div class="pt-header">
-                    <div class="pt-header-left">
-                        <img src="{{ isset($isPdf) && $isPdf ? public_path('images/logo.png') : asset('images/logo.png') }}" class="pt-logo" alt="Logo">
-                        <div class="pt-brand-info">
-                            <h1 class="pt-company-name">
-                                <span class="pt-stamp">NEW</span> VRUNDAVAN NURSERY
-                            </h1>
-                            <p class="pt-subtitle">Retailer & Wholesaler of All Fruit, Flower & Ornamental Plants</p>
-                            <div><span class="pt-address">Gadu - Chorvad Circle, Porbandar Highway, Gadu (Sherbaug) Dist: Junagadh, Gujarat 362255</span></div>
-                        </div>
-                    </div>
-                    <div class="pt-header-right">
-                        <div class="pt-contact">6355151302 <br> 9925575862</div>
-                    </div>
-                </div>
 
-                <div class="pt-meta">
-                    <div class="pt-bill-to">
-                        <div style="margin-bottom: 4px;">
-                            <span style="color: var(--text-muted); font-size: 11px; text-transform: uppercase; font-weight: 700;">Bill To:</span> 
-                            <span style="font-size: 15px; font-weight: 800; color: #000; margin-left: 4px;">{{ $invoice->customer_name }}</span>
-                        </div>
-                        @if($invoice->phone)
-                            <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">
-                                Mobile: +91 {{ $invoice->phone }}
+                @if($page_index == 0)
+                    <div class="pt-strip"></div>
+                    <div class="pt-header">
+                        <div class="pt-header-left">
+                            <img src="{{ isset($isPdf) && $isPdf ? public_path('images/logo.png') : asset('images/logo.png') }}" class="pt-logo" alt="Logo">
+                            <div class="pt-brand-info">
+                                <h1 class="pt-company-name">
+                                    <span class="pt-stamp">NEW</span> VRUNDAVAN NURSERY
+                                </h1>
+                                <p class="pt-subtitle">Retailer & Wholesaler of All Fruit, Flower & Ornamental Plants</p>
+                                <div><span class="pt-address">Gadu - Chorvad Circle, Porbandar Highway, Gadu (Sherbaug) Dist: Junagadh, Gujarat 362255</span></div>
                             </div>
-                        @endif
-                    </div>
-                    <div class="pt-invoice-details">
-                        <div class="pt-detail-row">
-                            <span class="pt-detail-label">Invoice No:</span>
-                            <span class="pt-detail-value">#{{ $invoice->invoice_no }}</span>
                         </div>
-                        <div class="pt-detail-row">
-                            <span class="pt-detail-label">Date:</span>
-                            <span class="pt-detail-value">{{ $invoice->created_at->format('d M, Y') }}</span>
+                        <div class="pt-header-right">
+                            <div class="pt-contact">6355151302 <br> 9925575862</div>
                         </div>
                     </div>
-                </div>
+
+                    <div class="pt-meta">
+                        <div class="pt-bill-to">
+                            <div style="margin-bottom: 4px;">
+                                <span style="color: var(--text-muted); font-size: 11px; text-transform: uppercase; font-weight: 700;">Bill To:</span> 
+                                <span style="font-size: 15px; font-weight: 800; color: #000; margin-left: 4px;">{{ $invoice->customer_name }}</span>
+                            </div>
+                            @if($invoice->phone)
+                                <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">
+                                    Mobile: +91 {{ $invoice->phone }}
+                                </div>
+                            @endif
+                        </div>
+                        <div class="pt-invoice-details">
+                            <div class="pt-detail-row">
+                                <span class="pt-detail-label">Invoice No:</span>
+                                <span class="pt-detail-value">#{{ $invoice->invoice_no }}</span>
+                            </div>
+                            <div class="pt-detail-row">
+                                <span class="pt-detail-label">Date:</span>
+                                <span class="pt-detail-value">{{ $invoice->created_at->format('d M, Y') }}</span>
+                            </div>
+                        </div>
+                    </div>
                 @endif
-                
+
                 @if($page_index > 0)
-                <div class="pt-strip" style="height: 4px; background: var(--border-color); margin-bottom: 16px;"></div>
-                <div style="display:flex; justify-content: space-between; margin-bottom: 16px; font-size: 13px; font-weight: 700; color: var(--text-muted);">
-                    <div>Invoice No: #{{ $invoice->invoice_no }}</div>
-                    <div>Page {{ $page_index + 1 }} of {{ $page_count }}</div>
-                </div>
+                    <div class="pt-strip" style="height: 4px; background: var(--border-color); margin-bottom: 16px;"></div>
+                    <div style="display:flex; justify-content: space-between; margin-bottom: 16px; font-size: 13px; font-weight: 700; color: var(--text-muted);">
+                        <div>Invoice No: #{{ $invoice->invoice_no }}</div>
+                        <div>Page {{ $page_index + 1 }} of {{ $page_count }}</div>
+                    </div>
                 @endif
 
                 <div class="pt-table-container">
@@ -567,7 +664,8 @@ function gujaratiAmountInWordsPrint($number) {
                             @foreach($p_items as $idx => $item)
                                 @php
                                     $item_display_index = 0;
-                                    for($i=0; $i<$page_index; $i++) $item_display_index += count($pages[$i]);
+                                    for ($i = 0; $i < $page_index; $i++)
+                                        $item_display_index += count($pages[$i]);
                                     $item_display_index += $idx + 1;
                                     $running_total += $item->total;
                                 @endphp
@@ -577,8 +675,10 @@ function gujaratiAmountInWordsPrint($number) {
                                         <span class="pt-item-name">{{ $item->product_name }}</span>
                                         @php
                                             $details = [];
-                                            if($item->height && $item->height !== '-') $details[] = 'H: '.$item->height;
-                                            if($item->bag_size && $item->bag_size !== '-') $details[] = 'Bag: '.$item->bag_size;
+                                            if ($item->height && $item->height !== '-')
+                                                $details[] = 'H: ' . $item->height;
+                                            if ($item->bag_size && $item->bag_size !== '-')
+                                                $details[] = 'Bag: ' . $item->bag_size;
                                         @endphp
                                         @if(count($details) > 0)
                                             <span class="pt-item-meta"> - {{ implode(' | ', $details) }}</span>
@@ -591,10 +691,10 @@ function gujaratiAmountInWordsPrint($number) {
                             @endforeach
 
                             @php 
-                                $rowCount = count($p_items); 
+                                                            $rowCount = count($p_items);
                                 $is_first = ($page_index == 0);
                                 $is_last = ($page_index == $page_count - 1);
-                                
+
                                 // Determine the target row count to fill the page
                                 if ($is_last) {
                                     $fill_limit = $rowCount; // Dynamic: No extra empty rows on last page
@@ -632,17 +732,17 @@ function gujaratiAmountInWordsPrint($number) {
 
                         <div class="pt-totals-box">
                             @php $afterDiscount = $invoice->subtotal - $invoice->discount; @endphp
-                            
+
                             <div class="pt-total-row">
                                 <span class="pt-total-label">Subtotal</span>
                                 <span class="pt-total-val currency-txt">₹ {{ number_format($invoice->subtotal, 2) }}</span>
                             </div>
 
                             @if($invoice->discount > 0)
-                            <div class="pt-total-row" style="color: #dc2626; background: #fef2f2;">
-                                <span class="pt-total-label">Discount</span>
-                                <span class="pt-total-val currency-txt">- ₹ {{ number_format($invoice->discount, 2) }}</span>
-                            </div>
+                                <div class="pt-total-row" style="color: #dc2626; background: #fef2f2;">
+                                    <span class="pt-total-label">Discount</span>
+                                    <span class="pt-total-val currency-txt">- ₹ {{ number_format($invoice->discount, 2) }}</span>
+                                </div>
                             @endif
 
                             @if($invoice->gst_amount > 0)
