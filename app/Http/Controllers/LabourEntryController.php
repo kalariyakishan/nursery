@@ -12,10 +12,18 @@ use Illuminate\Support\Facades\DB;
 
 class LabourEntryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $entries = LabourEntry::latest('date')->paginate(10);
-        return view('labour_entries.index', compact('entries'));
+        $query = LabourEntry::query();
+
+        $start_date = $request->input('start_date', Carbon::now()->startOfMonth()->format('Y-m-d'));
+        $end_date = $request->input('end_date', Carbon::now()->endOfMonth()->format('Y-m-d'));
+
+        $query->where('date', '>=', $start_date);
+        $query->where('date', '<=', $end_date);
+
+        $entries = $query->latest('date')->paginate(10)->withQueryString();
+        return view('labour_entries.index', compact('entries', 'start_date', 'end_date'));
     }
 
     public function create()

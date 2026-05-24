@@ -51,6 +51,32 @@
         </div>
     </div>
 
+    <!-- Filter Form -->
+    <div class="card-surface p-6 mb-8 border-t-4 border-blue-500">
+        <form action="{{ route('labour-entries.index') }}" method="GET" class="flex flex-col md:flex-row gap-4 items-end">
+            <div class="w-full md:w-1/3">
+                <label class="block text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-1">શરૂઆતની તારીખ (Start Date)</label>
+                <input type="date" name="start_date" value="{{ $start_date }}" class="w-full border-border-light rounded-lg bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+            </div>
+            <div class="w-full md:w-1/3">
+                <label class="block text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-1">અંતની તારીખ (End Date)</label>
+                <input type="date" name="end_date" value="{{ $end_date }}" class="w-full border-border-light rounded-lg bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+            </div>
+            <div class="flex gap-3">
+                <button type="submit" class="primary-btn px-6">
+                    <span class="material-symbols-outlined text-[18px]">filter_alt</span>
+                    ફિલ્ટર કરો
+                </button>
+                @if(request()->has('start_date') || request()->has('end_date'))
+                    <a href="{{ route('labour-entries.index') }}" class="px-6 py-2.5 rounded-lg border border-border-light text-text-secondary font-bold hover:bg-background hover:text-text-primary transition-colors flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[18px]">restart_alt</span>
+                        રિસેટ (Reset)
+                    </a>
+                @endif
+            </div>
+        </form>
+    </div>
+
     <!-- History Table -->
     <div class="card-surface shadow-premium overflow-hidden">
         <div class="overflow-x-auto">
