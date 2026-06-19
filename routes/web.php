@@ -65,6 +65,7 @@ Route::middleware('auth')->group(function () {
     Route::get('labour-entries/duplicate/{date}', [App\Http\Controllers\LabourEntryController::class, 'duplicate'])->name('labour-entries.duplicate');
     Route::resource('labour-entries', App\Http\Controllers\LabourEntryController::class);
     
+    Route::get('labour-entries/api/get-by-date', [App\Http\Controllers\LabourEntryApiController::class, 'getByDate'])->name('api.labour-entries.get-by-date');
     Route::post('labour-entries/api/store', [App\Http\Controllers\LabourEntryApiController::class, 'store'])->name('api.labour-entries.store');
     Route::put('labour-entries/api/update/{id}', [App\Http\Controllers\LabourEntryApiController::class, 'update'])->name('api.labour-entries.update');
     Route::delete('labour-entries/api/destroy/{id}', [App\Http\Controllers\LabourEntryApiController::class, 'destroy'])->name('api.labour-entries.destroy');

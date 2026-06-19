@@ -18,6 +18,21 @@
                     <span class="material-symbols-outlined text-[18px]">history</span>
                     હિસ્ટ્રી જુઓ
                 </a>
+                <div class="flex items-center bg-white rounded-lg border border-border-light shadow-subtle p-1">
+                    <button @click="changeDateBy(-1)" class="p-2 hover:bg-background rounded-md transition-colors text-text-secondary hover:text-primary flex items-center justify-center" title="આગળનો દિવસ (Previous Day)">
+                        <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+                    </button>
+                    
+                    <div class="px-4 py-2 border-x border-border-light flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[18px] text-primary">calendar_today</span>
+                        <input type="date" x-model="date" @change="fetchDataForDate()"
+                            class="border-none p-0 text-sm font-bold focus:ring-0 cursor-pointer bg-transparent text-text-primary w-[115px]">
+                    </div>
+
+                    <button @click="changeDateBy(1)" class="p-2 hover:bg-background rounded-md transition-colors text-text-secondary hover:text-primary flex items-center justify-center" title="પછીનો દિવસ (Next Day)">
+                        <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -87,7 +102,7 @@
                             <p class="font-bold text-sm">ડાબી બાજુના લિસ્ટમાંથી મજૂર પસંદ કરો અથવા નવું નામ લખી Enter દબાવો.</p>
                         </div>
 
-                        <template x-for="(item, index) in items" :key="item.worker_name">
+                        <template x-for="(item, index) in items" :key="index">
                             <div class="p-4 md:px-6 md:py-4 grid grid-cols-1 md:grid-cols-12 gap-4 items-center hover:bg-background/30 transition-colors group relative" :class="{'opacity-50': item.status === 'deleting'}">
                                 
                                 <!-- Worker Info -->
@@ -186,6 +201,37 @@
                         return this.workers;
                     }
                     return this.workers.filter(w => w.name.toLowerCase().includes(this.searchQuery.toLowerCase()));
+                },
+
+                async fetchDataForDate() {
+                    try {
+                        const res = await fetch(`/labour-entries/api/get-by-date?date=${this.date}`);
+                        const data = await res.json();
+                        this.items = data.items;
+                        // If it's a new date (not existing), we need to auto-persist them
+                        if (!data.isExisting && this.items.length > 0) {
+                            this.items.forEach((item, idx) => {
+                                setTimeout(() => {
+                                    this.persistAdd(item);
+                                }, idx * 100);
+                            });
+                        }
+                        
+                        // Optional: update URL using history API so reloading works
+                        window.history.pushState({}, '', `/labour-entries/create?date=${this.date}`);
+                    } catch(e) {
+                        console.error('Failed to fetch data for date', e);
+                    }
+                },
+
+                changeDateBy(days) {
+                    const d = new Date(this.date);
+                    d.setDate(d.getDate() + days);
+                    const year = d.getFullYear();
+                    const month = String(d.getMonth() + 1).padStart(2, '0');
+                    const day = String(d.getDate()).padStart(2, '0');
+                    this.date = `${year}-${month}-${day}`;
+                    this.fetchDataForDate();
                 },
 
                 moveDown() {

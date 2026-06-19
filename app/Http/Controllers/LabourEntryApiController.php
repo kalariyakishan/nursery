@@ -105,4 +105,51 @@ class LabourEntryApiController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+    public function getByDate(Request $request)
+    {
+        $date = $request->query('date', date('Y-m-d'));
+        $entry = LabourEntry::where('date', $date)->with('details.worker')->first();
+        
+        $items = [];
+        $isExisting = false;
+
+        if ($entry) {
+            $isExisting = true;
+            foreach ($entry->details as $detail) {
+                $items[] = [
+                    'id' => $detail->id,
+                    'worker_id' => $detail->worker_id,
+                    'worker_name' => $detail->worker ? $detail->worker->name : '',
+                    'default_wage' => $detail->worker ? $detail->worker->default_wage : 0,
+                    'attendance_type' => $detail->attendance_type ?? 'full',
+                    'wage_amount' => $detail->wage_amount,
+                    'status' => ''
+                ];
+            }
+        } else {
+            // Get latest entry before this date
+            $latestEntry = LabourEntry::where('date', '<', $date)->latest('date')->with('details.worker')->first();
+            if ($latestEntry) {
+                foreach ($latestEntry->details as $detail) {
+                    if ($detail->worker) {
+                        $items[] = [
+                            'id' => null,
+                            'worker_id' => $detail->worker_id,
+                            'worker_name' => $detail->worker->name,
+                            'default_wage' => $detail->worker->default_wage,
+                            'attendance_type' => 'full',
+                            'wage_amount' => $detail->worker->default_wage,
+                            'status' => ''
+                        ];
+                    }
+                }
+            }
+        }
+
+        return response()->json([
+            'isExisting' => $isExisting,
+            'items' => $items
+        ]);
+    }
 }

@@ -26,22 +26,19 @@ class LabourEntryController extends Controller
         return view('labour_entries.index', compact('entries', 'start_date', 'end_date'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        $today = date('Y-m-d');
-        $todayEntry = LabourEntry::where('date', $today)->first();
-        if ($todayEntry) {
-            return redirect()->route('labour-entries.edit', $todayEntry);
+        $selectedDate = $request->input('date', date('Y-m-d'));
+        $entryForDate = LabourEntry::where('date', $selectedDate)->first();
+        if ($entryForDate) {
+            return redirect()->route('labour-entries.edit', $entryForDate);
         }
 
         $workers = Worker::orderBy('name')->get();
         $items = [];
-        $latestEntry = LabourEntry::latest('date')->with('details.worker')->first();
-        if ($latestEntry && $latestEntry->date == date('Y-m-d', strtotime('-1 day'))) {
-             $latestEntry = LabourEntry::latest('date')->with('details.worker')->first();
-             // Just auto-load latest if available, regardless of date, as user asked for "yesterday's" but latest is safer.
-        }
-        $latestEntry = LabourEntry::latest('date')->with('details.worker')->first();
+        
+        // If creating for today, default to yesterday's workers if we want, or just get the latest entry before the selected date.
+        $latestEntry = LabourEntry::where('date', '<', $selectedDate)->latest('date')->with('details.worker')->first();
 
         if ($latestEntry) {
             foreach ($latestEntry->details as $detail) {
@@ -60,7 +57,8 @@ class LabourEntryController extends Controller
             }
         }
         
-        return view('labour_entries.create', compact('workers', 'items'));
+        $newDate = $selectedDate;
+        return view('labour_entries.create', compact('workers', 'items', 'newDate'));
     }
 
     public function store(Request $request)
