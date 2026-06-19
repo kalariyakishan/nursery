@@ -21,10 +21,18 @@ class LabourEntryApiController extends Controller
         try {
             DB::beginTransaction();
 
-            $entry = LabourEntry::firstOrCreate(
-                ['date' => $request->date],
-                ['total_workers' => 0, 'total_amount' => 0]
-            );
+            try {
+                $entry = LabourEntry::firstOrCreate(
+                    ['date' => $request->date],
+                    ['total_workers' => 0, 'total_amount' => 0]
+                );
+            } catch (\Illuminate\Database\QueryException $e) {
+                if ($e->errorInfo[1] == 1062) {
+                    $entry = LabourEntry::where('date', $request->date)->first();
+                } else {
+                    throw $e;
+                }
+            }
 
             $worker_id = $request->worker_id;
 
