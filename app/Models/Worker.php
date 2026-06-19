@@ -3,11 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Worker extends Model
 {
-    use SoftDeletes;
     protected $fillable = ['name', 'phone', 'default_wage'];
 
     public function attendance()

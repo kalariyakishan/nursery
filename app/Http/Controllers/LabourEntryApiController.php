@@ -18,18 +18,20 @@ class LabourEntryApiController extends Controller
             'wage_amount' => 'required|numeric|min:0',
         ]);
 
+        $formattedDate = \Carbon\Carbon::parse($request->date)->format('Y-m-d');
+        
         $entry = null;
         $attempts = 0;
         while (!$entry && $attempts < 5) {
             try {
                 $entry = LabourEntry::firstOrCreate(
-                    ['date' => $request->date],
+                    ['date' => $formattedDate],
                     ['total_workers' => 0, 'total_amount' => 0]
                 );
             } catch (\Illuminate\Database\QueryException $e) {
                 if ($e->errorInfo[1] == 1062) {
                     usleep(100000); // 100ms
-                    $entry = LabourEntry::where('date', $request->date)->first();
+                    $entry = LabourEntry::where('date', $formattedDate)->first();
                 } else {
                     throw $e;
                 }
