@@ -18,9 +18,9 @@ class LabourEntryApiController extends Controller
             'wage_amount' => 'required|numeric|min:0',
         ]);
 
-        try {
-            DB::beginTransaction();
-
+        $entry = null;
+        $attempts = 0;
+        while (!$entry && $attempts < 5) {
             try {
                 $entry = LabourEntry::firstOrCreate(
                     ['date' => $request->date],
@@ -28,11 +28,21 @@ class LabourEntryApiController extends Controller
                 );
             } catch (\Illuminate\Database\QueryException $e) {
                 if ($e->errorInfo[1] == 1062) {
+                    usleep(100000); // 100ms
                     $entry = LabourEntry::where('date', $request->date)->first();
                 } else {
                     throw $e;
                 }
             }
+            $attempts++;
+        }
+
+        if (!$entry) {
+            return response()->json(['error' => 'Database concurrency issue. Please try again.'], 500);
+        }
+
+        try {
+            DB::beginTransaction();
 
             $worker_id = $request->worker_id;
 
